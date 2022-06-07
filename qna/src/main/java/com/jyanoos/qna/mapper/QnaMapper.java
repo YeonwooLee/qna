@@ -78,9 +78,14 @@ public interface QnaMapper {
         @Param("lecture_name") String lecture_name
     );
 
-    //학생 검색 lecture_name
+    //학생 그룹 검색 lecture_name
     @Select("SELECT * FROM student where lectureName=#{lectureName}")
     List<Student> selectStudentsByLectureName(@Param("lectureName") String lectureName);
+
+    //학생 단일 검색 idx
+    @Select("SELECT * FROM student where idx=#{idx}")
+    Student selectStudentByIdx(@Param("idx") int idx);
+
 
     //학생 수정 qna_times
     @Update("UPDATE student SET qna_times = #{qna_times} where id = #{id}")

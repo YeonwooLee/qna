@@ -63,6 +63,12 @@ public class QnaServiceImpl implements QnaService{
         return studentListArr;
     }
 
+    @Override
+    public Student getStudentByIdx(int idx) {
+        Student student = qnaMapper.selectStudentByIdx(idx);
+        return student;
+    }
+
     @Override//학생 qna_times 수정
     public Student modifyQnaTimes(Student student, int times) {
         return null;

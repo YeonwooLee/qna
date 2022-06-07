@@ -15,8 +15,25 @@
             $(".minusStdBtn").click(function(){
                 alert(this.id+"minus!");
             })
-
         })
+        function qnaTimeAjax(studentIdx){
+            var data = {"studentIdx":studentIdx}
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/qnaTimesAjax",
+                data: data,
+                success:function (result){
+                    $("#stdInfo"+studentIdx).text(result.name+"("+result.qnaTimes+")회");
+                },
+                error:function(data,textStatus){
+                    alert("에러가 발생했습니다.");
+                },
+                complete:function(data,textStatus){
+                    alert("작업을완료 했습니다");
+                }
+            });
+        }
         /*]]>*/
     </script>
 </head>
@@ -55,7 +72,7 @@
             <table class="rankTbl">
                 <tr class="rankTblTr" th:each="studentList:${studentListArr}">
                     <td class="rankTblTd1" th:each="student:${studentList}">
-                        <span class="name" th:text="${student.name}">김철수(5회)</span>
+                        <span class="name" th:id="|stdInfo${student.idx}|" th:text="|${student.name}(${student.qnatimes}회)|">김철수(5회)</span>
                         <input th:if="${student.name!=null}" th:id="|plusStdBtn${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
                         <input th:if="${student.name!=null}" th:id="|minusStdBtn${student.idx}|" th:class="minusStdBtn" type="button" value="-">
                     </td>

@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -32,5 +35,14 @@ public class QnaController {
         model.addAttribute("lectureList",lectureList);
         model.addAttribute("studentListArr",studentListArr);
         return "qnaMain";
+    }
+
+    @PostMapping("/qnaTimesAjax")
+    @ResponseBody
+    public String qnaTimesAjax(Model model, @RequestParam("idx") int idx){
+        log.info("ajax요청으로 받아온 idx = {}", idx);
+
+        Student student = qnaService.getStudentByIdx(idx);
+        return student;//json형태로 변환햏서 보내야할듯
     }
 }

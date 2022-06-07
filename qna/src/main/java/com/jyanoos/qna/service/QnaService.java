@@ -24,6 +24,10 @@ public interface QnaService {
     //강의에 해당하는 학생 리스트 리턴
     List<List<Student>> getStudents(String lectureName);
 
+    //단일 학생 검색(idx)
+    Student getStudentByIdx(int idx);
+
+
     //학생 qna_times 수정
     Student modifyQnaTimes(Student student, int times);
 
