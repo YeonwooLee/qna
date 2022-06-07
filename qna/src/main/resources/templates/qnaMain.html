@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../static/main.css" th:href="@{/main.css}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script>
+        /*<![CDATA[*/
+        $(document).ready(function(){
+            $(".plusStdBtn").click(function(){
+                alert(this.id+"plus!");
+            })
+            $(".minusStdBtn").click(function(){
+                alert(this.id+"minus!");
+            })
+
+        })
+        /*]]>*/
+    </script>
+</head>
+<body>
+
+<div class="header">
+    <h1>My Website</h1>
+    <p>Resize the browser window to see the effect.</p>
+</div>
+
+<div class="topnav">
+    <a href="#">Link</a>
+    <a href="#">Link</a>
+    <a href="#">Link</a>
+    <a href="#" style="float:right">Link</a>
+</div>
+
+<div class="row">
+    <div class="rightcolumn">
+        <div class="card">
+            <h2>TITLE HEADING</h2>
+            <h5>Title description, Dec 7, 2017</h5>
+
+
+            <table class="lecture">
+                <thead th:each="lecture:${lectureList}"><th th:text="${lecture.name}">수업1</th></thead>
+                <thead><th>+</th></thead>
+            </table>
+        </div>
+
+    </div>
+    <div class="leftcolumn">
+
+        <div class="card">
+            <h3>Popular Post</h3>
+            <table class="rankTbl">
+                <tr class="rankTblTr" th:each="studentList:${studentListArr}">
+                    <td class="rankTblTd1" th:each="student:${studentList}">
+                        <span class="name" th:text="${student.name}">김철수(5회)</span>
+                        <input th:if="${student.name!=null}" th:id="|plusStdBtn${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
+                        <input th:if="${student.name!=null}" th:id="|minusStdBtn${student.idx}|" th:class="minusStdBtn" type="button" value="-">
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<div class="footer">
+    <h2>Footer</h2>
+</div>
+
+</body>
+</html>
