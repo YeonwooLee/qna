@@ -1,8 +1,9 @@
-package com.jyanoos.qna.service;
+package com.jyanoos.qna.service.qna;
 
 import com.jyanoos.qna.domain.Lecture;
 import com.jyanoos.qna.domain.Student;
 import com.jyanoos.qna.mapper.QnaMapper;
+import com.jyanoos.qna.service.qna.QnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class QnaServiceImpl implements QnaService{
+public class QnaServiceImpl implements QnaService {
     private final QnaMapper qnaMapper;
 
     @Override//교수에 해당하는 강의 리스트 리턴

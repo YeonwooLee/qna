@@ -37,7 +37,7 @@ public class QnaMapperTest {
     @Test
     void 교수삽입검색(){
         qnaMapper.insertProfessor("pfId001","pfName001","pwdpwd");
-        Professor professor = qnaMapper.selectProfessorById("pfId001");
+        Professor professor = qnaMapper.selectProfessorByname("pfName001");
         log.info("교수: {}",professor);
     }
     @Test

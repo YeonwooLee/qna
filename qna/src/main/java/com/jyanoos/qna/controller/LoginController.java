@@ -1,31 +1,61 @@
 package com.jyanoos.qna.controller;
-import com.jyanoos.qna.service.LoginService;
+import com.jyanoos.qna.domain.LoginResult;
+import com.jyanoos.qna.domain.Professor;
+import com.jyanoos.qna.domain.QnaConst;
+import com.jyanoos.qna.service.login.LoginServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-import com.jyanoos.qna.domain.User;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+@Slf4j
 @Controller
 public class LoginController {
-    private final LoginService loginService;
+    private final LoginServiceImpl loginService;
 
-    public LoginController(LoginService loginService) {
+    public LoginController(LoginServiceImpl loginService) {
         this.loginService = loginService;
     }
 
-    @RequestMapping("/test")
-    public String join(Model model){
-        loginService.joinUser(); //회원 입력
-        List<User> users = loginService.showUser(); //회원조회
-        model.addAttribute("users",users);
-
-
-        int id = 1223;
-        String email = "a3a@aa.a";
-        User oneUser = loginService.showOneUser(id,email);
-        model.addAttribute("oneUser",oneUser);
-
+    @RequestMapping("/loginpage{loginTry}")
+    public String loginPage(Model model, @PathVariable("loginTry")String loginTry){
+        log.info("loginTry = {}",loginTry);
+        model.addAttribute("loginTry",loginTry);
         return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam("loginId")String loginId, @RequestParam("password")String password, HttpServletRequest req, Model model){
+        log.info("로그인 시작");
+        HttpSession session = req.getSession(); //세션없으면 만듦
+        LoginResult loginResult = loginService.loginBasic(loginId, password);
+        log.info("로그인정보: {}",loginResult);
+
+        Professor loginProfessor = loginResult.getProfessor();
+        if(loginResult.isSuccess()){
+            session.setAttribute(QnaConst.LOGIN_MEMBER,loginProfessor);
+            log.info("교수 로그인 id={}, name={}",loginProfessor.getIdx(),loginProfessor.getName());
+            return "redirect:/qnamain";
+        }else{
+            return "redirect:/loginpagefalse";
+        }
+
+    }
+
+    @RequestMapping("/logout")
+    public String logout(HttpServletRequest req){
+        HttpSession session = req.getSession();
+        Professor professor = (Professor) session.getAttribute(QnaConst.LOGIN_MEMBER);
+        log.info("로그아웃 요청:{}",professor);
+
+        loginService.logout(session);
+        return "redirect:/loginpage";
     }
 }

@@ -1,4 +1,4 @@
-package com.jyanoos.qna.service;
+package com.jyanoos.qna.service.qna;
 
 import com.jyanoos.qna.domain.Lecture;
 import com.jyanoos.qna.domain.Student;
