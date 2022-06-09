@@ -21,7 +21,7 @@ public class QnaServiceTest {
     }
     @Test
     void 학생리스트(){
-        //List<Student> 김강의 = qnaService.getStudents("김강의");
+        qnaService.modifyQnaTimes(1,3);
 
     }
 }

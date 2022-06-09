@@ -11,5 +11,5 @@ public class Student {
     int idx;
     String name;
     String lecture_id;
-    int qna_times;
+    int qnaTimes;
 }

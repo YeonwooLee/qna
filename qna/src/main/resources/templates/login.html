@@ -2,13 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../static/login-page.css" th:href="@{/login-page.css}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script defer src="../static/login-page.js" th:src="@{/login-page.js}"></script>
 </head>
-<body>
-<div th:each="user:${users}">
-    <h1 th:text="${user.id}"></h1>
-</div>
 
-<h2 th:text="${oneUser}"></h2>
+<body>
+<main id="main-holder">
+    <h1 id="login-header">Login</h1>
+    <div id="login-error-msg-holder">
+        <p id="login-error-msg">Invalid loginId <span id="error-msg-second-line">and/or password</span></p>
+    </div>
+    <form th:action="@{/login}" th:method="post" id="login-form">
+        <input type="text" name="loginId" id="loginId-field" class="login-form-field" placeholder="loginId">
+        <input type="password" name="password" id="password-field" class="login-form-field" placeholder="Password">
+        <input type="hidden" id="loginTry" th:value="${loginTry}"/>
+        <input type="submit" value="Login" id="login-form-submit">
+    </form>
+</main>
 </body>
 </html>

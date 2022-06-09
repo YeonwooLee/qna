@@ -22,9 +22,17 @@ public interface QnaMapper {
     ) ;
 
     //교수 검색
-    @Select("SELECT * FROM professor where id = #{id}")
-    Professor selectProfessorById(
-            @Param("id") String id
+    @Select("SELECT * FROM professor where idx = #{idx}")
+    Professor selectProfessorByIdx(
+            @Param("idx") int idx
+    );
+    @Select("SELECT * FROM professor where name = #{name}")
+    Professor selectProfessorByname(
+            @Param("name") String name
+    );
+    @Select("SELECT count(*) FROM professor where name = #{name}")
+    int countProfessorByname(
+            @Param("name") String name
     );
 
     //교수 삭제
@@ -87,11 +95,11 @@ public interface QnaMapper {
     Student selectStudentByIdx(@Param("idx") int idx);
 
 
-    //학생 수정 qna_times
-    @Update("UPDATE student SET qna_times = #{qna_times} where id = #{id}")
-    int updateStudentQnaTimesById(
-            @Param("qna_times") int qna_times,
-            @Param("id") String id
+    //학생 수정 qnaTimes
+    @Update("UPDATE student SET qnaTimes = #{qnaTimes} where idx = #{idx}")
+    int updateStudentQnaTimesByIdx(
+            @Param("idx") int idx,
+            @Param("qnaTimes") int qnaTimes
     );
 
     //학생 삭제(id)

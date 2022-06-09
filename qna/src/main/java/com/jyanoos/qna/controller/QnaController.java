@@ -1,6 +1,9 @@
 package com.jyanoos.qna.controller;
 
+import com.google.gson.Gson;
 import com.jyanoos.qna.domain.Lecture;
+import com.jyanoos.qna.domain.Professor;
+import com.jyanoos.qna.domain.QnaConst;
 import com.jyanoos.qna.domain.Student;
 import com.jyanoos.qna.service.QnaService;
 import lombok.RequiredArgsConstructor;
@@ -13,18 +16,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class QnaController {
-    private final String professorName = "admin";
+
     private final QnaService qnaService;
 
     @RequestMapping("/qnamain")
-    public String qnaMain(Model model) throws IOException {
+    public String qnaMain(Model model, HttpServletRequest req) throws IOException {
+        HttpSession session = req.getSession();
+        Professor professor = (Professor) session.getAttribute(QnaConst.LOGIN_MEMBER);
+        log.info("professor 정보: {}",professor);
+        String professorName = professor.getName();
+
         log.info("교수명의로 강의 리스트 생성 - 현재 교수명 : {}", professorName);
         List<Lecture> lectureList = qnaService.getLectureList(professorName);
         String firstLectureName = lectureList.get(0).getName();
@@ -37,12 +48,23 @@ public class QnaController {
         return "qnaMain";
     }
 
-    @PostMapping("/qnaTimesAjax")
+    @RequestMapping("/qnaTimesAjax")
     @ResponseBody
-    public String qnaTimesAjax(Model model, @RequestParam("idx") int idx){
-        log.info("ajax요청으로 받아온 idx = {}", idx);
+    public String qnaTimesAjax(Model model, @RequestParam("studentIdx") int studentIdx, @RequestParam("mode") String mode){
+        log.info("ajax요청으로 받아온 idx = {}", studentIdx);
+        Student student = qnaService.getStudentByIdx(studentIdx);
+        int beforeQnaTimes = student.getQnaTimes(); //기존 qnaTimes
+        int afterQnaTimes = student.getQnaTimes(); //변경용 qnaTimes
 
-        Student student = qnaService.getStudentByIdx(idx);
-        return student;//json형태로 변환햏서 보내야할듯
+        //ajax요청의 mode인자를 보고 더하긴지 빼긴지 판별 후 반영
+        if(mode.equals("plus")) afterQnaTimes+=1;
+        if(mode.equals("minus")) afterQnaTimes-=1;
+
+        student = qnaService.modifyQnaTimes(studentIdx,afterQnaTimes);
+
+        Gson gson = new Gson();
+        String studentJson = gson.toJson(student);
+        log.info("{}의 질문 수 {}---->{}",student.getName(),beforeQnaTimes,afterQnaTimes);
+        return studentJson;//json형태로 변환햏서 보내야할듯
     }
 }

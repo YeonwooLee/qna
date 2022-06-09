@@ -69,8 +69,11 @@ public class QnaServiceImpl implements QnaService{
         return student;
     }
 
-    @Override//학생 qna_times 수정
-    public Student modifyQnaTimes(Student student, int times) {
-        return null;
+    @Override//학생 qnaTimes 수정
+    public Student modifyQnaTimes(int studentIdx, int afterTimes) {
+        int i = qnaMapper.updateStudentQnaTimesByIdx(studentIdx, afterTimes);
+        log.info("질문 타임 수정, 수정된 행 {}",i);
+        Student student = qnaMapper.selectStudentByIdx(studentIdx);
+        return student;
     }
 }

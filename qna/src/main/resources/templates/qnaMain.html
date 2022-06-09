@@ -6,31 +6,35 @@
     <title></title>
     <link rel="stylesheet" type="text/css" href="../static/main.css" th:href="@{/main.css}">
     <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script defer src="../static/common.js" th:src="@{/common.js}"></script>
     <script>
         /*<![CDATA[*/
         $(document).ready(function(){
             $(".plusStdBtn").click(function(){
-                alert(this.id+"plus!");
+                //alert(this.id+"plus!");
+                var idx = this.id.split("_")[1]
+                qnaTimeAjax(idx,"plus");
             })
             $(".minusStdBtn").click(function(){
-                alert(this.id+"minus!");
+                var idx = this.id.split("_")[1]
+                qnaTimeAjax(idx,"minus");
             })
         })
-        function qnaTimeAjax(studentIdx){
-            var data = {"studentIdx":studentIdx}
+        function qnaTimeAjax(studentIdx,mode){
+            var data = {"studentIdx":studentIdx,"mode":mode}
             $.ajax({
                 type:"post",
                 dataType:"json",
                 url:"/qnaTimesAjax",
                 data: data,
                 success:function (result){
-                    $("#stdInfo"+studentIdx).text(result.name+"("+result.qnaTimes+")회");
+                    $("#stdInfo"+studentIdx).text(result.name+"("+result.qnaTimes+"회)");
                 },
                 error:function(data,textStatus){
                     alert("에러가 발생했습니다.");
                 },
                 complete:function(data,textStatus){
-                    alert("작업을완료 했습니다");
+                    //console.log(result.name+"의 수정 완료");
                 }
             });
         }
@@ -48,7 +52,7 @@
     <a href="#">Link</a>
     <a href="#">Link</a>
     <a href="#">Link</a>
-    <a href="#" style="float:right">Link</a>
+    <a href="/logout" style="float:right">Logout</a>
 </div>
 
 <div class="row">
@@ -72,9 +76,9 @@
             <table class="rankTbl">
                 <tr class="rankTblTr" th:each="studentList:${studentListArr}">
                     <td class="rankTblTd1" th:each="student:${studentList}">
-                        <span class="name" th:id="|stdInfo${student.idx}|" th:text="|${student.name}(${student.qnatimes}회)|">김철수(5회)</span>
-                        <input th:if="${student.name!=null}" th:id="|plusStdBtn${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
-                        <input th:if="${student.name!=null}" th:id="|minusStdBtn${student.idx}|" th:class="minusStdBtn" type="button" value="-">
+                        <span th:if="${student.name!=null}" class="name" th:id="|stdInfo${student.idx}|" th:text="|${student.name}(${student.qnaTimes}회)|">김철수(5회)</span>
+                        <input th:if="${student.name!=null}" th:id="|plusStdBtn_${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
+                        <input th:if="${student.name!=null}" th:id="|minusStdBtn_${student.idx}|" th:class="minusStdBtn" type="button" value="-">
                     </td>
                 </tr>
             </table>

@@ -28,7 +28,7 @@ public interface QnaService {
     Student getStudentByIdx(int idx);
 
 
-    //학생 qna_times 수정
-    Student modifyQnaTimes(Student student, int times);
+    //학생 qnaTimes 수정
+    Student modifyQnaTimes(int studentIdx, int times);
 
 }
