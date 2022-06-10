@@ -49,7 +49,7 @@ public class QnaMapperTest {
 
     @Test
     void 학생삽입검색(){
-        qnaMapper.insertStudent("stdId001","stdName001","lcName001");
+        qnaMapper.insertStudent("stdId001","stdName001");
         List<Student> students = qnaMapper.selectStudentsByLectureName("lcName001");
         log.info("학생: {}",students);
     }

@@ -1,6 +1,8 @@
 package com.jyanoos.qna.service.qna;
 
 import com.jyanoos.qna.domain.Lecture;
+import com.jyanoos.qna.domain.Qna;
+import com.jyanoos.qna.domain.QnaConst;
 import com.jyanoos.qna.domain.Student;
 import com.jyanoos.qna.mapper.QnaMapper;
 import com.jyanoos.qna.service.qna.QnaService;
@@ -40,9 +42,11 @@ public class QnaServiceImpl implements QnaService {
     @Override//강의에 해당하는 학생 리스트 리턴
     public List<List<Student>> getStudents(String lectureName) {
         List<Student> studentList = qnaMapper.selectStudentsByLectureName(lectureName);
-
-        int col_num = 3;
-        log.info("줄 맞춤 되어있는 학생 리스트 생성 - 현재 설정된 줄 수: {}",col_num);
+//        for(Student student:studentList){
+//            student.setLastQnaDate(qnaMapper.selectQnaByStdNameLcName(student.getName(),lectureName));
+//        }학생 qna리스트가 lastQnaDate로 바꼈다면 성공
+        int col_num = QnaConst.STUDENT_COLUMN_NUM;
+        log.info("현재 설정된 줄 수: {}",col_num);
 
         List<List<Student>> studentListArr = new ArrayList<>(); //최종
         int studentIndex = 0;
@@ -76,5 +80,29 @@ public class QnaServiceImpl implements QnaService {
         log.info("질문 타임 수정, 수정된 행 {}",i);
         Student student = qnaMapper.selectStudentByIdx(studentIdx);
         return student;
+    }
+
+    @Override
+    public List<Student> addStdList(String[] stdList, String lectureName) {
+        log.info("학생 리스트 등록 서비스 시작");
+        List<Student> studentList = new ArrayList<>();
+
+        for(int i=0;i<stdList.length;i++){
+            String studentName = stdList[i];
+            log.info("학생 {}을 {}에 등록합니다",studentName,lectureName);
+            qnaMapper.insertStudent(studentName,lectureName);
+            Student addedStudent = qnaMapper.selectStudentByNameLcName(studentName, lectureName);
+            studentList.add(addedStudent);
+        }
+        return studentList;
+    }
+
+    @Override
+    public Qna addQna(String studentName, String lectureName) {
+        log.info("새 질문 생성! 학생명-{}, 강의명-{}",studentName,lectureName);
+        int i = qnaMapper.insertQna(studentName, lectureName);
+        Qna qna = qnaMapper.selectRecentQna(studentName,lectureName);
+        qnaMapper.updateStudentLastQnaDate(studentName,lectureName,qna.getQnaTime());
+        return qna;
     }
 }

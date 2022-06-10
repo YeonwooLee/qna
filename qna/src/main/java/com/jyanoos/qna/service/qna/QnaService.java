@@ -1,6 +1,7 @@
 package com.jyanoos.qna.service.qna;
 
 import com.jyanoos.qna.domain.Lecture;
+import com.jyanoos.qna.domain.Qna;
 import com.jyanoos.qna.domain.Student;
 
 import java.util.List;
@@ -31,4 +32,9 @@ public interface QnaService {
     //학생 qnaTimes 수정
     Student modifyQnaTimes(int studentIdx, int times);
 
+    //학생을 리스트로 추가
+    List<Student> addStdList(String[] stdList,String lectureName);
+
+    //qna 삽입
+    Qna addQna(String studentName, String lectureName);
 }

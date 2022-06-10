@@ -40,7 +40,7 @@ public class LoginController {
 
         Professor loginProfessor = loginResult.getProfessor();
         if(loginResult.isSuccess()){
-            session.setAttribute(QnaConst.LOGIN_MEMBER,loginProfessor);
+            session.setAttribute(QnaConst.LOGIN_MEMBER,loginProfessor.getName());
             log.info("교수 로그인 id={}, name={}",loginProfessor.getIdx(),loginProfessor.getName());
             return "redirect:/qnamain";
         }else{
@@ -52,8 +52,8 @@ public class LoginController {
     @RequestMapping("/logout")
     public String logout(HttpServletRequest req){
         HttpSession session = req.getSession();
-        Professor professor = (Professor) session.getAttribute(QnaConst.LOGIN_MEMBER);
-        log.info("로그아웃 요청:{}",professor);
+        String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
+        log.info("로그아웃 요청:{}",professorName);
 
         loginService.logout(session);
         return "redirect:/loginpage";

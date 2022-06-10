@@ -6,6 +6,8 @@ import com.jyanoos.qna.domain.Qna;
 import com.jyanoos.qna.domain.Student;
 import org.apache.ibatis.annotations.*;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Mapper
@@ -44,15 +46,15 @@ public interface QnaMapper {
 
     //강의 CRUD
     //강의 삽입
-    @Insert("INSERT INTO lecture(name, professor_id)" +
-            "VALUES(#{name}, #{professor_id})")
+    @Insert("INSERT INTO lecture(name, professorName)" +
+            "VALUES(#{name}, #{professorName})")
     int insertLecture(
             @Param("name") String name,
-            @Param("professor_id") String professor_id
+            @Param("professorName") String professorName
     );
 
     //강의 검색
-    @Select("SELECT * FROM lecture where professorName=#{professorName}")
+    @Select("SELECT * FROM lecture where professorName=#{professorName} order by idx asc")
     List<Lecture> selectLecturesByProfessorName(
             @Param("professorName") String professorName
     );
@@ -78,12 +80,11 @@ public interface QnaMapper {
 
     //학생 CRUD
     //학생 삽입
-    @Insert("INSERT INTO student(id,name,  lecture_name)" +
-            "VALUES(#{id},#{name}, #{lecture_name})")
+    @Insert("INSERT INTO student(name, lectureName)" +
+            "VALUES(#{name}, #{lectureName})")
     int insertStudent(
-        @Param("id") String id,
         @Param("name") String name,
-        @Param("lecture_name") String lecture_name
+        @Param("lectureName") String lectureName
     );
 
     //학생 그룹 검색 lecture_name
@@ -94,12 +95,22 @@ public interface QnaMapper {
     @Select("SELECT * FROM student where idx=#{idx}")
     Student selectStudentByIdx(@Param("idx") int idx);
 
+    @Select("SELECT * FROM student where name=#{name} and lectureName=#{lectureName}")
+    Student selectStudentByNameLcName(@Param("name") String name,@Param("lectureName") String lectureName);
+
 
     //학생 수정 qnaTimes
     @Update("UPDATE student SET qnaTimes = #{qnaTimes} where idx = #{idx}")
     int updateStudentQnaTimesByIdx(
             @Param("idx") int idx,
             @Param("qnaTimes") int qnaTimes
+    );
+    //학생 수정 lastQnaDate
+    @Update("UPDATE student SET lastQnaDate = #{lastQnaDate} where name = #{name} and lectureName=#{lectureName}")
+    int updateStudentLastQnaDate(
+            @Param("name") String name,
+            @Param("lectureName") String lectureName,
+            @Param("lastQnaDate") Timestamp lastQnaDate
     );
 
     //학생 삭제(id)
@@ -112,12 +123,16 @@ public interface QnaMapper {
 
     //Qna CRUD
     //qna 삽입
-    @Insert("INSERT INTO qna(student_id, lecture_name) VALUES(#{student_id},#{lecture_name})")
-    int insertQna(@Param("student_id") String student_id, @Param("lecture_name") String lecture_name);
+    @Insert("INSERT INTO qna(studentName, lectureName) VALUES(#{studentName},#{lectureName})")
+    int insertQna(@Param("studentName") String studentName, @Param("lectureName") String lectureName);
 
     //qna 검색
-    @Select("SELECT * FROM qna where student_id = #{student_id} and lecture_name = #{lecture_name}")
-    List<Qna> selectQnaByStdIdLecId(@Param("student_id") String student_id, @Param("lecture_name") String lecture_name);
+    @Select("SELECT * FROM qna where studentName = #{studentName} and lectureName = #{lectureName} order by qnaTime desc")
+    List<Qna> selectQnaByStdNameLcName(@Param("studentName") String studentName, @Param("lectureName") String lectureName);
+
+    //최근 등록 qna 검색
+    @Select("SELECT * FROM qna where studentName = #{studentName} and lectureName = #{lectureName} order by idx desc limit 1")
+    Qna selectRecentQna(@Param("studentName") String studentName, @Param("lectureName") String lectureName);
 
     //qna 삭제
     @Delete("DELETE FROM qna where student_id = #{student_id} and lecture_name = #{lecture_name}")
