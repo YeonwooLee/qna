@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -67,6 +69,33 @@ public class QnaServiceImpl implements QnaService {
         }
         return studentListArr;
     }
+
+    @Override
+    public Student pickQnaStudent(String lectureName, String mode) {
+        log.info("qna대상 학생 검색 시작 - mode = {} lecture ={}",mode, lectureName);
+        List<Student> studentList;//랜덤추출 대상 학생 리스트
+
+        //최적추출
+        if(mode.equals("fit")){
+            int minQnaTimes = qnaMapper.getMinQnaTimes(lectureName);
+            log.info("최적적합 검색, minQnaTimes = {}", minQnaTimes);
+
+            Date minQnaDate = qnaMapper.lastQnaDate(lectureName, minQnaTimes);
+            log.info("minQnaDate = {}",minQnaDate);
+
+            if(minQnaDate==null){
+                studentList = qnaMapper.pickGroupLastQnaIsNull(lectureName);
+            }else{
+                studentList = qnaMapper.selectStudentMinQna(lectureName,minQnaTimes,minQnaDate);
+            }
+
+            //랜덤추출
+        }else studentList = qnaMapper.selectStudentsByLectureName(lectureName);
+
+        Collections.shuffle(studentList);
+        return studentList.get(0);
+    }
+
 
     @Override
     public Student getStudentByIdx(int idx) {

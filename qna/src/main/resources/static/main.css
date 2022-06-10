@@ -109,3 +109,8 @@ th, td{
 td.rankTblTd1{
     width: 30%;
 }
+
+
+.hidden {
+    display: none;
+}

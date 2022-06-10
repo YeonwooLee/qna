@@ -22,8 +22,11 @@ public interface QnaService {
 
 
 
-    //강의에 해당하는 학생 리스트 리턴
+    //강의에 해당하는 학생 리스트 리턴(줄바꿈 처리 on)
     List<List<Student>> getStudents(String lectureName);
+
+    //강의에 해당하는 학생 리스트 리턴(줄바꿈 처리 off)
+    Student pickQnaStudent(String lecturelectureName, String mode);
 
     //단일 학생 검색(idx)
     Student getStudentByIdx(int idx);
@@ -32,8 +35,10 @@ public interface QnaService {
     //학생 qnaTimes 수정
     Student modifyQnaTimes(int studentIdx, int times);
 
-    //학생을 리스트로 추가
+    //학생을 리스트로 한번에 추가
     List<Student> addStdList(String[] stdList,String lectureName);
+
+
 
     //qna 삽입
     Qna addQna(String studentName, String lectureName);

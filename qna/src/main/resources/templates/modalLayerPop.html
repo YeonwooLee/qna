@@ -57,7 +57,6 @@
             $("#pickRandom").click(function(){
                 pickAjax("[[ ${nowLecture} ]]","random");
             })
-
         })
         function qnaTimeAjax(studentIdx,mode){
             var data = {"studentIdx":studentIdx,"mode":mode}
@@ -106,9 +105,92 @@
 
         /*]]>*/
     </script>
+    <script language="Javascript">
+
+        <!--
+
+        function setCookie( name, value, expiredays ) {
+
+            var todayDate = new Date();
+
+            todayDate.setDate( todayDate.getDate() + expiredays );
+
+            document.cookie = name + "=" + escape( value ) + "; path=/; expires=" + todayDate.toGMTString() + ";"
+
+        }
+
+        function closeWin() {
+
+            if ( document.notice_form.chkbox.checked ){
+
+                setCookie( "maindiv", "done" , 1 );
+
+            }
+
+            document.all['divpop'].style.visibility = "hidden";
+
+        }
+
+        //-->
+
+    </script>
 </head>
 <body>
+<!-- POPUP 내용 -->
 
+<div id="divpop" style="position:absolute;left:395px;top:190px;z-index:200;visibility:hidden;">
+
+    <table width=300 height=400 cellpadding=2 cellspacing=0>
+
+        <tr>
+
+            <td>
+
+                <img src="삽입할 이미지.jpg">
+
+                여기에 내용 삽입
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <form name="notice_form">
+
+                <td align=right bgcolor=white>
+
+                    <input type="checkbox" name="chkbox" value="checkbox">오늘 하루 이 창을 열지 않음
+
+                    <a href="javascript:closeWin();"><B>[닫기]</B></a>
+
+                </td>
+
+        </tr>
+
+        </form>
+
+    </table>
+
+</div>
+
+<script language="Javascript">
+
+    cookiedata = document.cookie;
+
+    if ( cookiedata.indexOf("maindiv=done") < 0 ){
+
+        document.all['divpop'].style.visibility = "visible";
+
+    }
+
+    else {
+
+        document.all['divpop'].style.visibility = "hidden";
+
+    }
+
+</script>
 <div class="header">
     <h1>My Website</h1>
     <p>Resize the browser window to see the effect.</p>
@@ -142,7 +224,6 @@
             <button type="button" id="pickFit">최적선택</button>
             <button type="button" id="studentsList">학생목록</button>
             <button type="button" id="regiStudents">학생등록</button>
-            <button type="button" id="lpOn">레팝온</button>
 
             <div class="mainWindow">
                 <table class="rankTbl">

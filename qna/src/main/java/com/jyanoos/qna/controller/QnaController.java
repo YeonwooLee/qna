@@ -1,16 +1,14 @@
 package com.jyanoos.qna.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jyanoos.qna.domain.*;
 import com.jyanoos.qna.service.qna.QnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -97,12 +95,23 @@ public class QnaController {
 
         student = qnaService.modifyQnaTimes(studentIdx,afterQnaTimes);
         log.info("student 정보 --->{}",student);
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+
         String studentJson = gson.toJson(student);
         log.info("{}의 질문 수 {}---->{}",student.getName(),beforeQnaTimes,afterQnaTimes);
         return studentJson;//json형태로 변환햏서 보내야할듯
     }
+    //ajax로 학생pick
+    @PostMapping("/qnamain/pick")
+    @ResponseBody
+    public String picStd(@RequestParam("lectureName") String lectureName, @RequestParam("mode") String mode){
+        Student student = qnaService.pickQnaStudent(lectureName, mode);
+        Gson gson = new Gson();
 
+        String studentJson = gson.toJson(student);
+
+        return studentJson;
+    }
     //학생 단체 등록
     @RequestMapping("/qnamain/regiStdLst")
     public String regiStdLst(@RequestParam("stdList")String stdList, @RequestParam("nowLecture")String nowLecture) throws UnsupportedEncodingException {
@@ -116,4 +125,5 @@ public class QnaController {
         log.info("redirectURI = {}",redirectURI);
         return "redirect:"+redirectURI;
     }
+
 }
