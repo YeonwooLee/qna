@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/class_qna
+    #url: jdbc:mariadb://jhineye-1512.ca3iwoml9ck6.ap-northeast-2.rds.amazonaws.com:3306/class_qna
+
+    username: root
+    #username: admin
+
+    password: dudn0915
+    #password: Todn690201!
+
+

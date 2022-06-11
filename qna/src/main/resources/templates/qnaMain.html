@@ -22,6 +22,16 @@
                 var idx = this.id.split("_")[1]
                 qnaTimeAjax(idx,"minus");
             })
+            //삭제버튼 보이기
+            $(".rankTblTd1").mouseover(function(){
+                var studentName = this.id.split("_")[1];
+                $('#stdDelBtn_'+studentName).removeClass("noShowBtn");
+            })
+            //삭제버튼 안보이기
+            $(".rankTblTd1").mouseout(function(){
+                var studentName = this.id.split("_")[1];
+                $('#stdDelBtn_'+studentName).addClass("noShowBtn");
+            })
 
             //강의이동
             $(".lectureTd").click(function(){
@@ -58,6 +68,7 @@
                 pickAjax("[[ ${nowLecture} ]]","random");
             })
 
+
         })
         function qnaTimeAjax(studentIdx,mode){
             var data = {"studentIdx":studentIdx,"mode":mode}
@@ -91,7 +102,9 @@
                 data: data,
                 success:function (result){
                     console.log(result);
-                    alert(result.name);
+                    alert(result.name+"당첨!");
+                    $(".pickedStd").removeClass("pickedStd");
+                    $("#stdTd_"+result.name).addClass("pickedStd");
                 },
                 error:function(data,textStatus){
                     alert("에러가 발생했습니다.");
@@ -103,7 +116,6 @@
                 }
             });
         }
-
         /*]]>*/
     </script>
 </head>
@@ -142,17 +154,21 @@
             <button type="button" id="pickFit">최적선택</button>
             <button type="button" id="studentsList">학생목록</button>
             <button type="button" id="regiStudents">학생등록</button>
-            <button type="button" id="lpOn">레팝온</button>
+
 
             <div class="mainWindow">
                 <table class="rankTbl">
                     <tr class="rankTblTr" th:each="studentList:${studentListArr}">
-                        <td class="rankTblTd1" th:each="student:${studentList}">
-                            <span th:if="${student.name!=null}" class="name" th:id="|stdInfo${student.idx}|" th:text="|${student.name}(${student.qnaTimes}회)|">김철수(5회)</span>
-                            <input th:if="${student.name!=null}" th:id="|plusStdBtn_${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
-                            <input th:if="${student.name!=null}" th:id="|minusStdBtn_${student.idx}|" th:class="minusStdBtn" type="button" value="-">
-
-                            <div class="qnaTime"> <span th:id="|qnaTime_${student.idx}|" th:text="${#dates.format(student.lastQnaDate, 'yyyy-MM-dd')}"></span></div>
+                        <td class="rankTblTd1" th:each="student:${studentList}" th:id="|stdTd_${student.name}|">
+                            <div class="tdLeft">
+                                <span th:if="${student.name!=null}" class="name" th:id="|stdInfo${student.idx}|" th:text="|${student.name}(${student.qnaTimes}회)|">김철수(5회)</span>
+                                <input th:if="${student.name!=null}" th:id="|plusStdBtn_${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
+                                <input th:if="${student.name!=null}" th:id="|minusStdBtn_${student.idx}|" th:class="minusStdBtn" type="button" value="-">
+                                <div class="qnaTime"> <span th:id="|qnaTime_${student.idx}|" th:text="${#dates.format(student.lastQnaDate, 'yyyy-MM-dd')}"></span></div>
+                            </div>
+                            <div class="tdRight">
+                                <span th:if="${student.name!=null}" class="stdDelBtn noShowBtn" th:id="|stdDelBtn_${student.name}|">삭제</span>
+                            </div>
                         </td>
                     </tr>
                 </table>

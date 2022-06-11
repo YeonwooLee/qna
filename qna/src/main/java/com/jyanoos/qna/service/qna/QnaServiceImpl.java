@@ -117,7 +117,7 @@ public class QnaServiceImpl implements QnaService {
         List<Student> studentList = new ArrayList<>();
 
         for(int i=0;i<stdList.length;i++){
-            String studentName = stdList[i];
+            String studentName = stdList[i].replace("\n","").replace(" ","");
             log.info("학생 {}을 {}에 등록합니다",studentName,lectureName);
             qnaMapper.insertStudent(studentName,lectureName);
             Student addedStudent = qnaMapper.selectStudentByNameLcName(studentName, lectureName);

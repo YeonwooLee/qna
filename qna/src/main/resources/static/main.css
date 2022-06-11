@@ -106,11 +106,33 @@ th, td{
     border:  1px solid;
 }
 
-td.rankTblTd1{
-    width: 30%;
-}
+/*td.rankTblTd1{*/
+/*    width: 30%;*/
+/*}*/
 
 
 .hidden {
+    display: none;
+}
+
+.pickedStd{
+    background-color: #b2bec3;
+}
+.tdRight{
+    display: inline-block;
+    float: right;
+
+}
+.tdLeft{
+    float: left;
+    display: inline-block;
+
+}
+.trashBtn{
+    width: 100%;
+
+}
+
+.noShowBtn{
     display: none;
 }
