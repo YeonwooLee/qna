@@ -74,7 +74,7 @@ public interface QnaMapper {
 
     //강의 삭제
     @Delete("DELETE FROM lecture WHERE name = #{name}")
-    int deleteLectureById(
+    int deleteLectureByName(
             @Param("name") String name
     );
 
@@ -150,12 +150,13 @@ public interface QnaMapper {
             @Param("lastQnaDate") Date lastQnaDate
     );
 
-    //학생 삭제(id)
-    @Delete("DELETE FROM student where id = #{id}")
-    int deleteStudentById(@Param("id")String id);
-    //학생 삭제(name)
-    @Delete("DELETE FROM student where name = #{name}")
-    int deleteStudentByName(@Param("name")String name);
+    //학생 삭제(idx)
+    @Delete("DELETE FROM student where id = #{idx}")
+    int deleteStudentById(@Param("idx")int idx);
+
+    //학생 삭제(name,lectureName)
+    @Delete("DELETE FROM student where name = #{name} and lectureName=#{lectureName}")
+    int deleteStudentByNameLcName(@Param("name")String name, @Param("lectureName")String lectureName);
 
 
     //Qna CRUD QNA 삽입시마다 student.lastQnaDate update 필요함

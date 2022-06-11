@@ -41,31 +41,55 @@
 
             //강의추가
             $("#addLecture").click(function(){
-                $("#addLecture").html("<th><input type='text' id='newLectureName' placeholder='새 강의명'> </th>");//html변경
+                $("#addLecture").html("<th colspan='2'><input type='text' id='newLectureName' placeholder='새 강의명'> </th>");//html변경
 
                 $("#addLecture").attr("id","newLectureThead");//thead 아이디 변경
 
                 $("#newLectureName").focus();//focus주기
             })
 
+            //강의 추가 - 포커스 잃으면 등록
             $(document).on("blur","#newLectureName",function(){
                 newLectureName = $("#newLectureName").val()
                 location.href = "/qnamain/addLecture/"+newLectureName;
             })
+
+            //학생추가
             $(document).on("click","#regiStudents",function(){
                 $(".mainWindow").html("<form action='/qnamain/regiStdLst' method='post'>" +
-                    "<textarea name='stdList' id='stdListTextArea' placeholder='엔터키로 구분하여 입력\n홍길동\n김철수'></textarea>" +
+                    "<textarea name='stdList' id='stdListTextArea' placeholder='스페이스로 구분하여 입력(엔터 사용 x)\nex)홍길동 김철수'></textarea>" +
                     "<input type='hidden' name='nowLecture' value='[[ ${nowLecture} ]]'> " +
                     "<input type='submit' value='등록하기'/> </form>");
             })
+
+            //학생목록 출력
             $(document).on("click","#studentsList",function(){
-                location.href="/qnamain/[[ ${nowLecture} ]]"
+                location.href="/qnamain/[[ ${nowLecture} ]]";
             })
+
+            //최적적합
             $("#pickFit").click(function(){
                 pickAjax("[[ ${nowLecture} ]]","fit");
             })
+            //랜덤적합
             $("#pickRandom").click(function(){
                 pickAjax("[[ ${nowLecture} ]]","random");
+            })
+
+            //학생삭제
+            $(".stdDelBtn").click(function(){
+                var stdId = this.id.split("_")[1];
+                var nowLecture = "[[ ${nowLecture} ]]";
+                location.href="/qnamain/delstudent/"+nowLecture+"/"+stdId;
+            })
+
+            //강의삭제
+            $(document).on("click",".delLc",function(){
+                var elementId = this.id.split("_");
+                var removeLectureName = elementId[1];
+                //var professor = elementId[2];
+                var nowLecture = "[[ ${nowLecture} ]]";
+                location.href="/qnamain/del_lecture/"+removeLectureName+"/"+nowLecture;
             })
 
 
@@ -141,8 +165,11 @@
 
 
             <table class="lecture">
-                <thead th:each="lecture:${lectureList}"><th th:class="lectureTd" th:id="|${lecture.name}_${session.loginMember}|" th:text="${lecture.name}">수업1</th></thead>
-                <thead id="addLecture"><th>+</th></thead>
+                <thead th:each="lecture:${lectureList}">
+                    <th th:class="lectureTd" th:id="|${lecture.name}_${session.loginMember}|" th:text="${lecture.name}">수업1</th>
+                    <th th:id="|del_${lecture.name}_${session.loginMember}|" class="delLc"><div th:class="td-img-wrapper"><img class="del-lc-img" th:src="@{/image/trash.png}"/></div></th>
+                </thead>
+                <thead id="addLecture"><th colspan="2">+</th></thead>
             </table>
         </div>
 

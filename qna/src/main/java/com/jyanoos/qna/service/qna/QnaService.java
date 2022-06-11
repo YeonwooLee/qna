@@ -42,4 +42,9 @@ public interface QnaService {
 
     //qna 삽입
     Qna addQna(String studentName, String lectureName);
+
+    //학생 삭제
+    int removeStudent(String nowLecture, String stdName);
+
+    boolean removeLecture(String removeLectureName);
 }

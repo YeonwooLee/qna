@@ -67,11 +67,11 @@ public class QnaMapperTest {
     }
     @Test
     void 학생삭제(){
-        qnaMapper.deleteStudentByName("stdName001");
+        qnaMapper.deleteStudentByName("stdName001","lcName001");
     }
     @Test
     void 강의삭제(){
-        qnaMapper.deleteLectureById("lcName001");
+        qnaMapper.deleteLectureByName("lcName001");
     }
     @Test
     void 교수삭제(){

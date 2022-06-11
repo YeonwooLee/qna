@@ -117,7 +117,8 @@ public class QnaController {
     public String regiStdLst(@RequestParam("stdList")String stdList, @RequestParam("nowLecture")String nowLecture) throws UnsupportedEncodingException {
         log.info("학생 단체등록 시작");
 
-        String[] studentArr = stdList.split("\n");//textarea 값 가져와서 split
+        //String[] studentArr = stdList.split("\n");//textarea 값 가져와서 split
+        String[] studentArr = stdList.split(" ");//textarea 값 가져와서 split
 
         List<Student> studentList = qnaService.addStdList(studentArr, nowLecture);
         log.info("학생 단체 등록 완료 강의-{} 로 이동",nowLecture);
@@ -126,4 +127,20 @@ public class QnaController {
         return "redirect:"+redirectURI;
     }
 
+    @RequestMapping("/qnamain/delstudent/{nowLecture}/{stdName}")
+    public String delStudent(@PathVariable("nowLecture") String nowLecture, @PathVariable("stdName") String stdName){
+        log.info("학생 삭제 요청 stdName = {}, lectureName = {}",stdName,nowLecture);
+        qnaService.removeStudent(nowLecture,stdName);
+        return "redirect:/qnamain/"+nowLecture;
+    }
+
+    @RequestMapping("/qnamain/del_lecture/{removeLectureName}/{nowLecture}")
+    public String removeLecture(
+            @PathVariable("removeLectureName")String removeLectureName,
+            @PathVariable("nowLecture")String nowLecture){
+        log.info("{} 삭제요청",removeLectureName);
+        qnaService.removeLecture(removeLectureName);
+        if(removeLectureName.equals(nowLecture)) return "redirect:/qnamain";
+        else return "redirect:/qnamain/"+nowLecture;
+    }
 }

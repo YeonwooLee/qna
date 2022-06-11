@@ -136,3 +136,18 @@ th, td{
 .noShowBtn{
     display: none;
 }
+
+.td-img-wrapper{
+    height: 100%;
+    width: 100%;
+}
+.delLc{
+    height: 0;
+}
+.del-lc-img{
+    max-width: 100%;
+}
+
+.lectureTd{
+    width: 80%;
+}

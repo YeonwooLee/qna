@@ -116,8 +116,11 @@ public class QnaServiceImpl implements QnaService {
         log.info("학생 리스트 등록 서비스 시작");
         List<Student> studentList = new ArrayList<>();
 
+
         for(int i=0;i<stdList.length;i++){
-            String studentName = stdList[i].replace("\n","").replace(" ","");
+            //String studentName = stdList[i].replace("\n","").replace(" ","").replace("\\a","");
+            String studentName = stdList[i];
+            log.info("stdList[i] is {}",stdList[i]);
             log.info("학생 {}을 {}에 등록합니다",studentName,lectureName);
             qnaMapper.insertStudent(studentName,lectureName);
             Student addedStudent = qnaMapper.selectStudentByNameLcName(studentName, lectureName);
@@ -133,5 +136,18 @@ public class QnaServiceImpl implements QnaService {
         Qna qna = qnaMapper.selectRecentQna(studentName,lectureName);
         qnaMapper.updateStudentLastQnaDate(studentName,lectureName,qna.getQnaTime());
         return qna;
+    }
+
+    @Override
+    public int removeStudent(String nowLecture, String stdName) {
+        int i = qnaMapper.deleteStudentByNameLcName(stdName, nowLecture);
+        return i;
+    }
+
+    @Override
+    public boolean removeLecture(String removeLectureName) {
+        int i = qnaMapper.deleteLectureByName(removeLectureName);
+        if(i==1) return true;
+        else return false;
     }
 }
