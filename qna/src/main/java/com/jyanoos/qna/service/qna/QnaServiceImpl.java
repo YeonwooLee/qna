@@ -5,7 +5,6 @@ import com.jyanoos.qna.domain.Qna;
 import com.jyanoos.qna.domain.QnaConst;
 import com.jyanoos.qna.domain.Student;
 import com.jyanoos.qna.mapper.QnaMapper;
-import com.jyanoos.qna.service.qna.QnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,19 +30,24 @@ public class QnaServiceImpl implements QnaService {
     public Lecture addLecture(String professorId,String lectureName) {
         int count = qnaMapper.counttLectureByName(lectureName);//중복확인
         int success = qnaMapper.insertLecture(lectureName, professorId);//성공확인
-        Lecture newLecture = qnaMapper.selectLectureByName(lectureName);//리턴용데이터
+        log.info("success is {}",success);
+        Lecture newLecture = qnaMapper.selectLectureByName(lectureName,professorId);//리턴용데이터
 
         return newLecture;
     }
 
     @Override//강의명 변경
-    public Lecture modifyLecture(Lecture lecture, String newLectureName) {
+    public Lecture modifyLecture(Lecture lecture, String newLectureName, String professorName) {
         return null;
     }
 
     @Override//강의에 해당하는 학생 리스트 리턴
-    public List<List<Student>> getStudents(String lectureName) {
-        List<Student> studentList = qnaMapper.selectStudentsByLectureName(lectureName);
+    public List<List<Student>> getStudents(String lectureName, String professorName) {
+        List<Student> studentList = qnaMapper.selectStudentsByLectureName(lectureName,professorName);
+        if(studentList.size()==0){
+            log.info("{} 학생없음",lectureName);
+            return null;
+        }
 //        for(Student student:studentList){
 //            student.setLastQnaDate(qnaMapper.selectQnaByStdNameLcName(student.getName(),lectureName));
 //        }학생 qna리스트가 lastQnaDate로 바꼈다면 성공
@@ -71,26 +75,26 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public Student pickQnaStudent(String lectureName, String mode) {
+    public Student pickQnaStudent(String lectureName, String mode, String professorName) {
         log.info("qna대상 학생 검색 시작 - mode = {} lecture ={}",mode, lectureName);
         List<Student> studentList;//랜덤추출 대상 학생 리스트
 
         //최적추출
         if(mode.equals("fit")){
-            int minQnaTimes = qnaMapper.getMinQnaTimes(lectureName);
+            int minQnaTimes = qnaMapper.getMinQnaTimes(lectureName,professorName);
             log.info("최적적합 검색, minQnaTimes = {}", minQnaTimes);
 
-            Date minQnaDate = qnaMapper.lastQnaDate(lectureName, minQnaTimes);
+            Date minQnaDate = qnaMapper.lastQnaDate(lectureName, minQnaTimes,professorName);
             log.info("minQnaDate = {}",minQnaDate);
 
             if(minQnaDate==null){
-                studentList = qnaMapper.pickGroupLastQnaIsNull(lectureName);
+                studentList = qnaMapper.pickGroupLastQnaIsNull(lectureName,professorName);
             }else{
-                studentList = qnaMapper.selectStudentMinQna(lectureName,minQnaTimes,minQnaDate);
+                studentList = qnaMapper.selectStudentMinQna(lectureName,minQnaTimes,minQnaDate,professorName);
             }
 
             //랜덤추출
-        }else studentList = qnaMapper.selectStudentsByLectureName(lectureName);
+        }else studentList = qnaMapper.selectStudentsByLectureName(lectureName,professorName);
 
         Collections.shuffle(studentList);
         return studentList.get(0);
@@ -112,7 +116,7 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public List<Student> addStdList(String[] stdList, String lectureName) {
+    public List<Student> addStdList(String[] stdList, String lectureName, String professorName) {
         log.info("학생 리스트 등록 서비스 시작");
         List<Student> studentList = new ArrayList<>();
 
@@ -122,31 +126,31 @@ public class QnaServiceImpl implements QnaService {
             String studentName = stdList[i];
             log.info("stdList[i] is {}",stdList[i]);
             log.info("학생 {}을 {}에 등록합니다",studentName,lectureName);
-            qnaMapper.insertStudent(studentName,lectureName);
-            Student addedStudent = qnaMapper.selectStudentByNameLcName(studentName, lectureName);
+            qnaMapper.insertStudent(studentName,lectureName,professorName);
+            Student addedStudent = qnaMapper.selectStudentByNameLcName(studentName, lectureName,professorName);
             studentList.add(addedStudent);
         }
         return studentList;
     }
 
     @Override
-    public Qna addQna(String studentName, String lectureName) {
+    public Qna addQna(String studentName, String lectureName,String professorName) {
         log.info("새 질문 생성! 학생명-{}, 강의명-{}",studentName,lectureName);
-        int i = qnaMapper.insertQna(studentName, lectureName);
-        Qna qna = qnaMapper.selectRecentQna(studentName,lectureName);
-        qnaMapper.updateStudentLastQnaDate(studentName,lectureName,qna.getQnaTime());
+        int i = qnaMapper.insertQna(studentName, lectureName, professorName);
+        Qna qna = qnaMapper.selectRecentQna(studentName,lectureName, professorName);
+        qnaMapper.updateStudentLastQnaDate(studentName,lectureName,qna.getQnaTime(),professorName);
         return qna;
     }
 
     @Override
-    public int removeStudent(String nowLecture, String stdName) {
-        int i = qnaMapper.deleteStudentByNameLcName(stdName, nowLecture);
+    public int removeStudent(String nowLecture, String stdName, String professorName) {
+        int i = qnaMapper.deleteStudentByNameLcName(stdName, nowLecture,professorName);
         return i;
     }
 
     @Override
-    public boolean removeLecture(String removeLectureName) {
-        int i = qnaMapper.deleteLectureByName(removeLectureName);
+    public boolean removeLecture(String removeLectureName, String professorName) {
+        int i = qnaMapper.deleteLectureByName(removeLectureName,professorName);
         if(i==1) return true;
         else return false;
     }

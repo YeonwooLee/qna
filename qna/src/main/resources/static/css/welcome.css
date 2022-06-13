@@ -1,0 +1,17 @@
+.form-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+    /*width: 25%;*/
+    /*margin-left: 37%;*/
+    height: 25%;
+    margin-top: 20%;
+}
+.content-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+

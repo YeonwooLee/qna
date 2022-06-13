@@ -63,19 +63,19 @@ public interface QnaMapper {
     @Select("select count(*) from lecture where name = #{name}")
     int counttLectureByName(@Param("name")String name);
     //강의 검색(강의명)
-    @Select("select * from lecture where name = #{name}")
-    Lecture selectLectureByName(@Param("name")String name);
+    @Select("select * from lecture where name = #{name} and professorName=#{professorName}")
+    Lecture selectLectureByName(@Param("name")String name, @Param("professorName") String professorName);
 
 
 
     //강의명 변경
-    @Update("UPDATE lecture SET name=#{name_after} where name=#{name_before}")
-    int updateLectureByName(@Param("name_before")String name_before, @Param("name_after")String name_after);
+    @Update("UPDATE lecture SET name=#{name_after} where name=#{name_before} and professorName=#{professorName}")
+    int updateLectureByName(@Param("name_before")String name_before, @Param("name_after")String name_after, @Param("professorName") String professorName);
 
     //강의 삭제
-    @Delete("DELETE FROM lecture WHERE name = #{name}")
+    @Delete("DELETE FROM lecture WHERE name = #{name} and professorName=#{professorName}")
     int deleteLectureByName(
-            @Param("name") String name
+            @Param("name") String name, @Param("professorName") String professorName
     );
 
 
@@ -83,46 +83,53 @@ public interface QnaMapper {
 
     //학생 CRUD
     //학생 삽입
-    @Insert("INSERT INTO student(name, lectureName)" +
-            "VALUES(#{name}, #{lectureName})")
+    @Insert("INSERT INTO student(name, lectureName, professorName)" +
+            "VALUES(#{name}, #{lectureName}, #{professorName})")
     int insertStudent(
         @Param("name") String name,
-        @Param("lectureName") String lectureName
+        @Param("lectureName") String lectureName,
+        @Param("professorName") String professorName
     );
 
     //학생 그룹 검색 lecture_name
-    @Select("SELECT * FROM student where lectureName=#{lectureName} order by qnaTimes asc")
-    List<Student> selectStudentsByLectureName(@Param("lectureName") String lectureName);
+    @Select("SELECT * FROM student where lectureName=#{lectureName} and professorName=#{professorName} order by qnaTimes asc")
+    List<Student> selectStudentsByLectureName(
+            @Param("lectureName") String lectureName,
+            @Param("professorName") String professorName
+            );
 
     //학생 최소 qnaTimes
-    @Select("SELECT MIN(qnaTimes) FROM student WHERE lectureName =#{lectureName}")
-    int getMinQnaTimes(@Param("lectureName")String lectureName);
+    @Select("SELECT MIN(qnaTimes) FROM student WHERE lectureName =#{lectureName} and professorName=#{professorName}")
+    int getMinQnaTimes(
+            @Param("lectureName")String lectureName,
+            @Param("professorName") String professorName
+            );
 
     //qnaTimes가 n인 학생수 중 가장 오래전에 질문한 날짜
-    @Select("SELECT MIN(lastQnaDate) FROM student WHERE lectureName =#{lectureName} AND qnaTimes=#{qnaTimes}")
-    Date lastQnaDate(@Param("lectureName")String lectureName,@Param("qnaTimes")int qnaTimes);
+    @Select("SELECT MIN(lastQnaDate) FROM student WHERE lectureName =#{lectureName} AND qnaTimes=#{qnaTimes} and professorName=#{professorName}")
+    Date lastQnaDate(@Param("lectureName")String lectureName,@Param("qnaTimes")int qnaTimes, @Param("professorName") String professorName);
 
     //가장질문 적은학생 중 가장 오래전에 질문한 학생(qnaTimes lastQnaDate)
-    @Select("SELECT * FROM student where lectureName=#{lectureName} and qnaTimes=#{qnaTimes} and lastQnaDate=#{lastQnaDate}")
-    List<Student> selectStudentMinQna(@Param("lectureName")String lectureName, @Param("qnaTimes") int qnaTimes, @Param("lastQnaDate")Date lastQnaDate);
+    @Select("SELECT * FROM student where lectureName=#{lectureName} and qnaTimes=#{qnaTimes} and lastQnaDate=#{lastQnaDate} and professorName=#{professorName}")
+    List<Student> selectStudentMinQna(@Param("lectureName")String lectureName, @Param("qnaTimes") int qnaTimes, @Param("lastQnaDate")Date lastQnaDate, @Param("professorName") String professorName);
 
     //학생 그룹 검색 최적적합(min(qnaTimes)!=0)
     @Select("SELECT * FROM student WHERE \n" +
-            "\tqnaTimes = \t(SELECT MIN(qnaTimes) FROM student WHERE lectureName =#{lectureName})\n" +
+            "\tqnaTimes = \t(SELECT MIN(qnaTimes) FROM student WHERE lectureName =#{lectureName} and professorName=#{professorName})\n" +
             "\tAND \n" +
-            "\tlastQnaDate = (SELECT MIN(lastQnaDate) FROM student WHERE lectureName =#{lectureName})\n" +
+            "\tlastQnaDate = (SELECT MIN(lastQnaDate) FROM student WHERE lectureName =#{lectureName} and professorName=#{professorName})\n" +
             "\tAND\n" +
-            "\tlectureName = #{lectureName}")
-    List<Student> pickGroup(@Param("lectureName")String lectureName);
+            "\tlectureName = #{lectureName} and professorName=#{professorName}")
+    List<Student> pickGroup(@Param("lectureName")String lectureName, @Param("professorName") String professorName);
 
     //학생 그룹 검색 최적적합(min(qnaTimes)=0)
     @Select("SELECT * FROM student WHERE \n" +
-            "\tqnaTimes = \t(SELECT MIN(qnaTimes) FROM student WHERE lectureName =#{lectureName})\n" +
+            "\tqnaTimes = \t(SELECT MIN(qnaTimes) FROM student WHERE lectureName =#{lectureName} and professorName=#{professorName})\n" +
             "\tAND \n" +
             "\tnvl(lastQnaDate,-1) = -1\n" +
             "\tAND\n" +
-            "\tlectureName = #{lectureName};")
-    List<Student> pickGroupLastQnaIsNull(@Param("lectureName")String lectureName);
+            "\tlectureName = #{lectureName} and professorName=#{professorName};")
+    List<Student> pickGroupLastQnaIsNull(@Param("lectureName")String lectureName, @Param("professorName") String professorName);
 
 
 
@@ -130,9 +137,9 @@ public interface QnaMapper {
     @Select("SELECT * FROM student where idx=#{idx}")
     Student selectStudentByIdx(@Param("idx") int idx);
 
-    //학생 단일 검색 기본키(학생명,강의명)
-    @Select("SELECT * FROM student where name=#{name} and lectureName=#{lectureName}")
-    Student selectStudentByNameLcName(@Param("name") String name,@Param("lectureName") String lectureName);
+    //학생 단일 검색 기본키(학생명,강의명, 교수명)
+    @Select("SELECT * FROM student where name=#{name} and lectureName=#{lectureName} and professorName=#{professorName}")
+    Student selectStudentByNameLcName(@Param("name") String name,@Param("lectureName") String lectureName, @Param("professorName") String professorName);
 
 
 
@@ -143,11 +150,12 @@ public interface QnaMapper {
             @Param("qnaTimes") int qnaTimes
     );
     //학생 수정 lastQnaDate
-    @Update("UPDATE student SET lastQnaDate = #{lastQnaDate} where name = #{name} and lectureName=#{lectureName}")
+    @Update("UPDATE student SET lastQnaDate = #{lastQnaDate} where name = #{name} and lectureName=#{lectureName} and professorName=#{professorName}")
     int updateStudentLastQnaDate(
             @Param("name") String name,
             @Param("lectureName") String lectureName,
-            @Param("lastQnaDate") Date lastQnaDate
+            @Param("lastQnaDate") Date lastQnaDate,
+            @Param("professorName") String professorName
     );
 
     //학생 삭제(idx)
@@ -155,24 +163,24 @@ public interface QnaMapper {
     int deleteStudentById(@Param("idx")int idx);
 
     //학생 삭제(name,lectureName)
-    @Delete("DELETE FROM student where name = #{name} and lectureName=#{lectureName}")
-    int deleteStudentByNameLcName(@Param("name")String name, @Param("lectureName")String lectureName);
+    @Delete("DELETE FROM student where name = #{name} and lectureName=#{lectureName} and professorName=#{professorName}")
+    int deleteStudentByNameLcName(@Param("name")String name, @Param("lectureName")String lectureName, @Param("professorName") String professorName);
 
 
     //Qna CRUD QNA 삽입시마다 student.lastQnaDate update 필요함
     //qna 삽입
-    @Insert("INSERT INTO qna(studentName, lectureName) VALUES(#{studentName},#{lectureName})")
-    int insertQna(@Param("studentName") String studentName, @Param("lectureName") String lectureName);
+    @Insert("INSERT INTO qna(studentName, lectureName, professorName) VALUES(#{studentName},#{lectureName},#{professorName})")
+    int insertQna(@Param("studentName") String studentName, @Param("lectureName") String lectureName,@Param("professorName") String professorName);
 
     //qna 검색 질문시간 내림차순
-    @Select("SELECT * FROM qna where studentName = #{studentName} and lectureName = #{lectureName} order by qnaTime desc")
-    List<Qna> selectQnaByStdNameLcName(@Param("studentName") String studentName, @Param("lectureName") String lectureName);
+    @Select("SELECT * FROM qna where studentName = #{studentName} and lectureName = #{lectureName} and professorName=#{professorName} order by qnaTime desc")
+    List<Qna> selectQnaByStdNameLcName(@Param("studentName") String studentName, @Param("lectureName") String lectureName, @Param("professorName") String professorName);
 
     //최근 등록 qna 검색
-    @Select("SELECT * FROM qna where studentName = #{studentName} and lectureName = #{lectureName} order by idx desc limit 1")
-    Qna selectRecentQna(@Param("studentName") String studentName, @Param("lectureName") String lectureName);
+    @Select("SELECT * FROM qna where studentName = #{studentName} and lectureName = #{lectureName} and professorName=#{professorName} order by idx desc limit 1")
+    Qna selectRecentQna(@Param("studentName") String studentName, @Param("lectureName") String lectureName, @Param("professorName") String professorName);
 
     //qna 삭제
-    @Delete("DELETE FROM qna where student_id = #{student_id} and lecture_name = #{lecture_name}")
-    int delteQna(@Param("student_id")String student_id, @Param("lecture_name")String lecture_name);
+    @Delete("DELETE FROM qna where student_id = #{student_id} and lecture_name = #{lecture_name} and professorName=#{professorName}")
+    int delteQna(@Param("student_id")String student_id, @Param("lecture_name")String lecture_name, @Param("professorName") String professorName);
 }

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
-    <link rel="stylesheet" type="text/css" href="../static/main.css" th:href="@{/main.css}">
+    <link rel="stylesheet" type="text/css" href="../static/css/main.css" th:href="@{/css/main.css}">
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script defer src="../static/common.js" th:src="@{/common.js}"></script>
     <script>
@@ -22,16 +22,18 @@
                 var idx = this.id.split("_")[1]
                 qnaTimeAjax(idx,"minus");
             })
-            //삭제버튼 보이기
-            $(".rankTblTd1").mouseover(function(){
-                var studentName = this.id.split("_")[1];
-                $('#stdDelBtn_'+studentName).removeClass("noShowBtn");
-            })
-            //삭제버튼 안보이기
-            $(".rankTblTd1").mouseout(function(){
-                var studentName = this.id.split("_")[1];
-                $('#stdDelBtn_'+studentName).addClass("noShowBtn");
-            })
+
+            //2022-06-12 삭제버튼 항상 보이게 정책 변경하여 주석처리
+            // //삭제버튼 보이기
+            // $(".rankTblTd1").mouseover(function(){
+            //     var studentName = this.id.split("_")[1];
+            //     $('#stdDelBtn_'+studentName).removeClass("noShowBtn");
+            // })
+            // //삭제버튼 안보이기
+            // $(".rankTblTd1").mouseout(function(){
+            //     var studentName = this.id.split("_")[1];
+            //     $('#stdDelBtn_'+studentName).addClass("noShowBtn");
+            // })
 
             //강의이동
             $(".lectureTd").click(function(){
@@ -69,10 +71,18 @@
 
             //최적적합
             $("#pickFit").click(function(){
+                if(idExist("reqAddStd")){
+                    alert("먼저 학생등록을 해주세요");
+                    return;
+                }
                 pickAjax("[[ ${nowLecture} ]]","fit");
             })
             //랜덤적합
             $("#pickRandom").click(function(){
+                if(idExist("reqAddStd")){
+                    alert("먼저 학생등록을 해주세요");
+                    return;
+                }
                 pickAjax("[[ ${nowLecture} ]]","random");
             })
 
@@ -80,7 +90,10 @@
             $(".stdDelBtn").click(function(){
                 var stdId = this.id.split("_")[1];
                 var nowLecture = "[[ ${nowLecture} ]]";
-                location.href="/qnamain/delstudent/"+nowLecture+"/"+stdId;
+                var delConfirm = confirm("["+nowLecture+"] 강의에서 ["+stdId+"] 학생을 삭제하시겠습니까?");
+                if (delConfirm){
+                    location.href="/qnamain/delstudent/"+nowLecture+"/"+stdId;
+                }
             })
 
             //강의삭제
@@ -89,11 +102,19 @@
                 var removeLectureName = elementId[1];
                 //var professor = elementId[2];
                 var nowLecture = "[[ ${nowLecture} ]]";
-                location.href="/qnamain/del_lecture/"+removeLectureName+"/"+nowLecture;
+                var delConfirm = confirm("["+removeLectureName+"] 강의를 삭제하시겠습니까?");
+                if(delConfirm){
+                    location.href="/qnamain/del_lecture/"+removeLectureName+"/"+nowLecture;
+                }
             })
 
 
         })
+        //id=elementId인 요소 체크
+        function idExist(elementId){
+            var result = document.getElementById(elementId) ? true:false;
+            return result;
+        }
         function qnaTimeAjax(studentIdx,mode){
             var data = {"studentIdx":studentIdx,"mode":mode}
             $.ajax({
@@ -185,17 +206,21 @@
 
             <div class="mainWindow">
                 <table class="rankTbl">
-                    <tr class="rankTblTr" th:each="studentList:${studentListArr}">
+                    <tr class="rankTblTr" th:if="${studentListArr}==null">
+                        <td class="rankTblTd1" id="reqAddStd">학생등록을 눌러 수업에 학생을 추가해주세요</td>
+                    </tr>
+                    <tr class="rankTblTr" th:unless="${studentListArr}==null" th:each="studentList:${studentListArr}">
                         <td class="rankTblTd1" th:each="student:${studentList}" th:id="|stdTd_${student.name}|">
                             <div class="tdLeft">
                                 <span th:if="${student.name!=null}" class="name" th:id="|stdInfo${student.idx}|" th:text="|${student.name}(${student.qnaTimes}회)|">김철수(5회)</span>
                                 <input th:if="${student.name!=null}" th:id="|plusStdBtn_${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
                                 <input th:if="${student.name!=null}" th:id="|minusStdBtn_${student.idx}|" th:class="minusStdBtn" type="button" value="-">
-                                <div class="qnaTime"> <span th:id="|qnaTime_${student.idx}|" th:text="${#dates.format(student.lastQnaDate, 'yyyy-MM-dd')}"></span></div>
+                                <div class="qnaTime">
+                                    <span th:id="|qnaTime_${student.idx}|" th:text="${#dates.format(student.lastQnaDate, 'yyyy-MM-dd')}"></span>
+                                    <span th:if="${student.name!=null}" class="stdDelBtn " th:id="|stdDelBtn_${student.name}|">삭제</span>
+                                </div>
                             </div>
-                            <div class="tdRight">
-                                <span th:if="${student.name!=null}" class="stdDelBtn noShowBtn" th:id="|stdDelBtn_${student.name}|">삭제</span>
-                            </div>
+
                         </td>
                     </tr>
                 </table>

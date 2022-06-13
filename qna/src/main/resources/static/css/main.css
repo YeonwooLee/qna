@@ -101,14 +101,15 @@ body {
 table{
     width: 100%;
     border: 1px solid;
+    table-layout: fixed;
 }
 th, td{
     border:  1px solid;
 }
 
-/*td.rankTblTd1{*/
-/*    width: 30%;*/
-/*}*/
+td.rankTblTd1{
+
+}
 
 
 .hidden {
@@ -119,13 +120,9 @@ th, td{
     background-color: #b2bec3;
 }
 .tdRight{
-    display: inline-block;
-    float: right;
 
 }
 .tdLeft{
-    float: left;
-    display: inline-block;
 
 }
 .trashBtn{

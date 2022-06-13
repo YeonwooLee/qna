@@ -49,29 +49,29 @@ public class QnaMapperTest {
 
     @Test
     void 학생삽입검색(){
-        qnaMapper.insertStudent("stdId001","stdName001");
-        List<Student> students = qnaMapper.selectStudentsByLectureName("lcName001");
+        qnaMapper.insertStudent("stdId001","stdName001","admin");
+        List<Student> students = qnaMapper.selectStudentsByLectureName("lcName001","admin");
         log.info("학생: {}",students);
     }
     @Test
     void qna삽입검색(){
-        qnaMapper.insertQna("stdId001","lcName001");
-        List<Qna> qna = qnaMapper.selectQnaByStdIdLecId("stdId001","lcName001");
+        qnaMapper.insertQna("stdId001","lcName001","admin");
+        List<Qna> qna = qnaMapper.selectQnaByStdIdLecId("stdId001","lcName001","admin");
         log.info("qna : {}",qna);
     }
 
 
     @Test
     void qna삭제(){
-        qnaMapper.delteQna("stdId001","lcName001");
+        qnaMapper.delteQna("stdId001","lcName001","admin");
     }
     @Test
     void 학생삭제(){
-        qnaMapper.deleteStudentByName("stdName001","lcName001");
+        qnaMapper.deleteStudentByName("stdName001","lcName001","admin");
     }
     @Test
     void 강의삭제(){
-        qnaMapper.deleteLectureByName("lcName001");
+        qnaMapper.deleteLectureByName("lcName001","admin");
     }
     @Test
     void 교수삭제(){

@@ -16,17 +16,18 @@ public interface QnaService {
 
 
     //강의명 변경
-    Lecture modifyLecture(Lecture lecture, String newLectureName);
+    Lecture modifyLecture(Lecture lecture, String newLectureName, String professorName);
 
 
 
 
 
     //강의에 해당하는 학생 리스트 리턴(줄바꿈 처리 on)
-    List<List<Student>> getStudents(String lectureName);
+    List<List<Student>> getStudents(String lectureName, String professorName);
 
     //강의에 해당하는 학생 리스트 리턴(줄바꿈 처리 off)
-    Student pickQnaStudent(String lecturelectureName, String mode);
+    Student pickQnaStudent(String lecturelectureName, String mode, String professorName);
+
 
     //단일 학생 검색(idx)
     Student getStudentByIdx(int idx);
@@ -36,15 +37,17 @@ public interface QnaService {
     Student modifyQnaTimes(int studentIdx, int times);
 
     //학생을 리스트로 한번에 추가
-    List<Student> addStdList(String[] stdList,String lectureName);
+    List<Student> addStdList(String[] stdList,String lectureName, String professorName);
 
 
 
     //qna 삽입
-    Qna addQna(String studentName, String lectureName);
+    Qna addQna(String studentName, String lectureName, String professorName);
 
     //학생 삭제
-    int removeStudent(String nowLecture, String stdName);
+    int removeStudent(String nowLecture, String stdName, String professorName);
 
-    boolean removeLecture(String removeLectureName);
+    boolean removeLecture(String removeLectureName, String professorName);
+
+
 }
