@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../error/static/css/welcome.css" th:href="@{/css/welcome.css}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script defer src="../static/common.js" th:src="@{/common.js}"></script>
+    <script>
+        $(document).ready(function(){
+            hgj("#tempP","알 수 없는 오류입니다 ㅠㅡㅠ");
+            $(".goMain").click(function (){
+                location.href="/qnamain";
+            })
+        })
+
+    </script>
+</head>
+<body>
+<div class="form-wrapper">
+        <table>
+            <tr><td><div class="content-wrapper"><span id="tempP">&nbsp;</span></div></td></tr>
+<!--            <tr><td><div class="content-wrapper"><p><input type="text" name="newLectureName" placeholder="강의명"/></p></div></td></tr>-->
+            <tr>
+                <td><div class="content-wrapper"><button class="goMain" type="button">메인으로</div></td>
+<!--                <td><div class="content-wrapper"><button type="button" value="등록하기"> </div></td>-->
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

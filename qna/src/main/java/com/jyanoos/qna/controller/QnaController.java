@@ -15,8 +15,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -54,6 +54,11 @@ public class QnaController {
     //qnamain의 주 컨텐츠 화면 구성(강의 선택)
     @RequestMapping("/qnamain/{lectureName}")
     public String qnaMain(Model model, HttpServletRequest req, @PathVariable("lectureName")String lectureName) throws IOException {
+        if(lectureName.contains("addLcFail_")){
+            String failLCName = lectureName.split("_")[1];
+            model.addAttribute("addLcFail","true");//강의등록 실패로 들어온경우
+            model.addAttribute("failLcName",failLCName);//강의등록 실패로 들어온경우
+        }
         HttpSession session = req.getSession();
         String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
 
@@ -61,6 +66,10 @@ public class QnaController {
 
         log.info("현재 교수명 : {}", professorName);
         List<Lecture> lectureList = qnaService.getLectureList(professorName);
+        log.info("lectureList {}",lectureList);
+        if (lectureList.size()==0){
+            return "welcome";
+        }
 
 
         log.info("현재 강의명 {}",lectureName);
@@ -82,7 +91,13 @@ public class QnaController {
                       HttpServletRequest req){//강의추가
         HttpSession session = req.getSession();
         String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
-        qnaService.addLecture(professorName,newLectureName);
+
+
+        Lecture lecture = qnaService.addLecture(professorName, newLectureName);
+        if(lecture==null){
+            return "redirect:/qnamain/addLcFail_"+newLectureName;
+        }
+
         return "redirect:/qnamain";
 
     }
@@ -151,7 +166,7 @@ public class QnaController {
         log.info("redirectURI = {}",redirectURI);
         return "redirect:"+redirectURI;
     }
-
+    //학생삭제
     @RequestMapping("/qnamain/delstudent/{nowLecture}/{stdName}")
     public String delStudent(@PathVariable("nowLecture") String nowLecture, @PathVariable("stdName") String stdName,HttpServletRequest req){
 
@@ -162,7 +177,7 @@ public class QnaController {
         qnaService.removeStudent(nowLecture,stdName,professorName);
         return "redirect:/qnamain/"+nowLecture;
     }
-
+    //강의삭제
     @RequestMapping("/qnamain/del_lecture/{removeLectureName}/{nowLecture}")
     public String removeLecture(
             @PathVariable("removeLectureName")String removeLectureName,
@@ -175,4 +190,30 @@ public class QnaController {
         if(removeLectureName.equals(nowLecture)) return "redirect:/qnamain";
         else return "redirect:/qnamain/"+nowLecture;
     }
+    //ajax로 학생중복확인
+    @PostMapping("/check/sameStd")
+    @ResponseBody
+    public String checkExistStd(@RequestParam("studentNames") String studentNames,@RequestParam("lectureName") String lectureName, HttpServletRequest req){
+        HttpSession session = req.getSession();
+        String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
+        List<Student> studentList = qnaService.getStudentsNoLine(lectureName,professorName);//현재학생목록
+        String[] studentArr = studentNames.split(" ");//추가할 학생목록
+
+        Map<String,String> map = new HashMap<>();
+        Gson gson = new Gson();
+
+        for(int i=0;i<studentList.size();i++){
+            if(Arrays.asList(studentArr).contains(studentList.get(i).getName())) {
+                map.put("exist","true");
+                map.put("existStdName",studentList.get(i).getName());
+                String result = gson.toJson(map);
+                return result;
+            }
+        }
+        map.put("exist","false");
+        String result = gson.toJson(map);
+        return result;
+
+    }
+
 }

@@ -21,11 +21,13 @@ public interface QnaService {
 
 
 
+    //강의에 해당하는 학생 리스트 리턴(줄바꿈 처리 off)
+    List<Student> getStudentsNoLine(String lectureName,String professorName);
 
     //강의에 해당하는 학생 리스트 리턴(줄바꿈 처리 on)
     List<List<Student>> getStudents(String lectureName, String professorName);
 
-    //강의에 해당하는 학생 리스트 리턴(줄바꿈 처리 off)
+    //학생추첨
     Student pickQnaStudent(String lecturelectureName, String mode, String professorName);
 
 

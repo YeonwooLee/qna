@@ -10,6 +10,9 @@
     <script>
         /*<![CDATA[*/
         $(document).ready(function(){
+            if("[[ ${addLcFail} ]]"=="true"){
+                alert("중복강의명입니다: [[ ${failLcName} ]]");
+            }
             var temp = $(".mainWindow").html();
             //qna 추가
             $(".plusStdBtn").click(function(){
@@ -56,12 +59,63 @@
                 location.href = "/qnamain/addLecture/"+newLectureName;
             })
 
-            //학생추가
+            //학생추가폼생성
             $(document).on("click","#regiStudents",function(){
-                $(".mainWindow").html("<form action='/qnamain/regiStdLst' method='post'>" +
+                var existStd = document.getElementsByClassName("rankTblTd1");
+                $(".mainWindow").html("<form action='/qnamain/regiStdLst' id='regiStdFrm' method='post'>" +
                     "<textarea name='stdList' id='stdListTextArea' placeholder='스페이스로 구분하여 입력(엔터 사용 x)\nex)홍길동 김철수'></textarea>" +
                     "<input type='hidden' name='nowLecture' value='[[ ${nowLecture} ]]'> " +
-                    "<input type='submit' value='등록하기'/> </form>");
+                    "<input type='button' id='existCheck' value='중복확인'/> " +
+                    "<input type='button' id='regiStdBtn' value='등록하기'/> " +
+                    "<input type='hidden' id='doFirst' value='false'/> </form>");
+                //$("#regiStdFrm").append("<input type='hidden' value='ffff'/>")
+            })
+            //중복확인버튼클릭이벤트
+            $(document).on("click","#existCheck",function(){
+                checkStd();
+            });
+
+            //학생추가 submit validation
+            $(document).on("click","#regiStdBtn",function(){
+                if($("#doFirst").val()=='false'){
+                    alert("먼저 중복확인을 해주세요");
+                    return
+                }
+                $("#doFirst").val("false");
+                var stdList = $("#stdListTextArea").val().split(' ');//신규입력목록
+
+
+                console.log(stdList);
+                console.log("리스트");
+                if(stdList[0]==' '){
+                    alert("공백으로 시작할 수 없습니다");
+                    return;
+                }
+                for(var i=0;i<stdList.length;i++){
+                    //var alreadyExist = checkStd(stdList[i]);
+                    if(stdList[i] ==''){
+                        alert("불필요한 공백이 존재합니다\n스페이스 연속 2회 이상 입력, 공백시작, 공백종료 여부를 확인해주세요");
+                        return;
+                    }else if(stdList[i].includes("\n")){
+                        alert("줄바꿈(Enter키 입력)을 제거해주세요");
+                        return;
+                    }else if($("#existStdCheck").val()=='true'){
+                        alert("이미 있는 학생이름입니다["+stdList[i]+"]");
+                        $("#existStdCheck").val('false');
+                        return;
+                    }
+                    for(var j=0;j<stdList.length;j++){
+                        if(i==j){
+                            continue;
+                        }else{
+                            if(stdList[i]==stdList[j]){
+                                alert("중복 이름은 등록할 수 없습니다:["+stdList[i]+"]");
+                                return;
+                            }
+                        }
+                    }
+                }
+                $("#regiStdFrm").submit();
             })
 
             //학생목록 출력
@@ -107,6 +161,8 @@
                     location.href="/qnamain/del_lecture/"+removeLectureName+"/"+nowLecture;
                 }
             })
+
+            $("#[[ ${nowLecture} ]]"+"_"+"[[ ${session.loginMember}]]").addClass("selectedLc");
 
 
         })
@@ -161,6 +217,36 @@
                 }
             });
         }
+        //학생중복확인
+        function checkStd(){
+            var data = {"studentNames":$("#stdListTextArea").val(),"lectureName":"[[ ${nowLecture} ]]"};
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/check/sameStd",
+                data: data,
+                success:function (result){
+                    var exist = result.exist;
+                    console.log(exist);
+                    //alert(exist);
+                    if (exist=='true'){
+                        alert("중복:"+result.existStdName);
+                    }
+                    else{
+                        alert("중복없음");
+                        $("#doFirst").val("true");
+                    }
+                },
+                error:function(data,textStatus){
+                    alert("에러가 발생했습니다.");
+                    console.log(data);
+                    console.log(textStatus);
+                },
+                complete:function(data,textStatus){
+                    //console.log(result.name+"의 수정 완료");
+                }
+            });
+        }
         /*]]>*/
     </script>
 </head>
@@ -186,7 +272,7 @@
 
 
             <table class="lecture">
-                <thead th:each="lecture:${lectureList}">
+                <thead th:each="lecture:${lectureList}" class="lectureThead">
                     <th th:class="lectureTd" th:id="|${lecture.name}_${session.loginMember}|" th:text="${lecture.name}">수업1</th>
                     <th th:id="|del_${lecture.name}_${session.loginMember}|" class="delLc"><div th:class="td-img-wrapper"><img class="del-lc-img" th:src="@{/image/trash.png}"/></div></th>
                 </thead>
@@ -197,7 +283,7 @@
     </div>
     <div class="leftcolumn">
         <div class="card">
-            <h3 th:text="${nowLecture}">Popular Post</h3>
+            <h1 th:text="${nowLecture}">Popular Post</h1>
             <button type="button" id="pickRandom">랜덤선택</button>
             <button type="button" id="pickFit">최적선택</button>
             <button type="button" id="studentsList">학생목록</button>
@@ -231,8 +317,8 @@
 </div>
 
 <div class="footer">
-    <h2>Footer</h2>
+    <h2>Asking costs nothing</h2>
 </div>
-
+<input type="hidden" id="addLcFail"/>
 </body>
 </html>

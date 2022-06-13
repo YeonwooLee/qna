@@ -29,6 +29,9 @@ public class QnaServiceImpl implements QnaService {
     @Override//교수에 강의 추가
     public Lecture addLecture(String professorId,String lectureName) {
         int count = qnaMapper.counttLectureByName(lectureName);//중복확인
+        if(count==1){
+            return null;
+        }
         int success = qnaMapper.insertLecture(lectureName, professorId);//성공확인
         log.info("success is {}",success);
         Lecture newLecture = qnaMapper.selectLectureByName(lectureName,professorId);//리턴용데이터
@@ -41,7 +44,14 @@ public class QnaServiceImpl implements QnaService {
         return null;
     }
 
-    @Override//강의에 해당하는 학생 리스트 리턴
+
+
+    @Override//강의에 해당하는 학생 리스트 리턴 줄바꿈 off
+    public List<Student> getStudentsNoLine(String lectureName, String professorName) {
+        List<Student> studentList = qnaMapper.selectStudentsByLectureName(lectureName, professorName);
+        return studentList;
+    }
+    @Override//강의에 해당하는 학생 리스트 리턴 줄바꿈 on
     public List<List<Student>> getStudents(String lectureName, String professorName) {
         List<Student> studentList = qnaMapper.selectStudentsByLectureName(lectureName,professorName);
         if(studentList.size()==0){
