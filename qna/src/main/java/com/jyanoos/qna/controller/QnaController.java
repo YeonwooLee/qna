@@ -67,6 +67,18 @@ public class QnaController {
         log.info("현재 교수명 : {}", professorName);
         List<Lecture> lectureList = qnaService.getLectureList(professorName);
         log.info("lectureList {}",lectureList);
+        
+        
+        //강의 없는거면 첫강의로 이동
+        boolean exist = false;
+        for(int i=0;i<lectureList.size();i++){
+            if(lectureList.get(i).getName().equals(lectureName)){
+                exist = true;
+            }
+        }
+        if(!exist) return "redirect:/qnamain";
+
+
         if (lectureList.size()==0){
             return "welcome";
         }
@@ -98,19 +110,19 @@ public class QnaController {
             return "redirect:/qnamain/addLcFail_"+newLectureName;
         }
 
-        return "redirect:/qnamain";
+        return "redirect:/qnamain/"+newLectureName;
 
     }
-    //강의추가
-    @PostMapping("/qnamain/addLecture")
-    String addLectureFirst(@RequestParam("newLectureName")String newLectureName,
-                      HttpServletRequest req){//강의추가
-        HttpSession session = req.getSession();
-        String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
-        qnaService.addLecture(professorName,newLectureName);
-        return "redirect:/qnamain";
-
-    }
+//    //강의추가
+//    @PostMapping("/qnamain/addLecture")
+//    String addLectureFirst(@RequestParam("newLectureName")String newLectureName,
+//                      HttpServletRequest req){//강의추가
+//        HttpSession session = req.getSession();
+//        String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
+//        qnaService.addLecture(professorName,newLectureName);
+//        return "redirect:/qnamain";
+//
+//    }
     //ajax로 질문 수 변경
     @RequestMapping("/qnaTimesAjax")
     @ResponseBody
@@ -152,13 +164,15 @@ public class QnaController {
     }
     //학생 단체 등록
     @RequestMapping("/qnamain/regiStdLst")
-    public String regiStdLst(@RequestParam("stdList")String stdList, @RequestParam("nowLecture")String nowLecture,HttpServletRequest req) throws UnsupportedEncodingException {
+    public String regiStdLst(@RequestParam("nowLecture")String nowLecture,HttpServletRequest req,@RequestParam("studentArr") List<String> studentArr) throws UnsupportedEncodingException {
         log.info("학생 단체등록 시작");
         HttpSession session = req.getSession();
         String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
 
         //String[] studentArr = stdList.split("\n");//textarea 값 가져와서 split
-        String[] studentArr = stdList.split(" ");//textarea 값 가져와서 split
+        //String[] studentArr = stdList.split(" ");//textarea 값 가져와서 split
+
+        log.info("studentArr {}",studentArr);
 
         List<Student> studentList = qnaService.addStdList(studentArr, nowLecture, professorName);
         log.info("학생 단체 등록 완료 강의-{} 로 이동",nowLecture);
@@ -193,17 +207,19 @@ public class QnaController {
     //ajax로 학생중복확인
     @PostMapping("/check/sameStd")
     @ResponseBody
-    public String checkExistStd(@RequestParam("studentNames") String studentNames,@RequestParam("lectureName") String lectureName, HttpServletRequest req){
+    public String checkExistStd(@RequestParam("studentNames") List<String> studentArr,@RequestParam("lectureName") String lectureName, HttpServletRequest req){
         HttpSession session = req.getSession();
+        //log.info("studende  {}",studentNames);
         String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
         List<Student> studentList = qnaService.getStudentsNoLine(lectureName,professorName);//현재학생목록
-        String[] studentArr = studentNames.split(" ");//추가할 학생목록
+        //String[] studentArr = studentNames.split("\n");//추가할 학생목록
+        log.info("StdArr {}",studentArr);
 
         Map<String,String> map = new HashMap<>();
         Gson gson = new Gson();
 
         for(int i=0;i<studentList.size();i++){
-            if(Arrays.asList(studentArr).contains(studentList.get(i).getName())) {
+            if(studentArr.contains(studentList.get(i).getName())) {
                 map.put("exist","true");
                 map.put("existStdName",studentList.get(i).getName());
                 String result = gson.toJson(map);

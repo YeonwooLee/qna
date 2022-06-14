@@ -39,7 +39,7 @@ public interface QnaService {
     Student modifyQnaTimes(int studentIdx, int times);
 
     //학생을 리스트로 한번에 추가
-    List<Student> addStdList(String[] stdList,String lectureName, String professorName);
+    List<Student> addStdList(List<String> studentArr,String lectureName, String professorName);
 
 
 

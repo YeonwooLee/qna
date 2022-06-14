@@ -126,15 +126,15 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public List<Student> addStdList(String[] stdList, String lectureName, String professorName) {
+    public List<Student> addStdList(List<String> studentArr, String lectureName, String professorName) {
         log.info("학생 리스트 등록 서비스 시작");
         List<Student> studentList = new ArrayList<>();
 
 
-        for(int i=0;i<stdList.length;i++){
+        for(int i=0;i<studentArr.size();i++){
             //String studentName = stdList[i].replace("\n","").replace(" ","").replace("\\a","");
-            String studentName = stdList[i];
-            log.info("stdList[i] is {}",stdList[i]);
+            String studentName = studentArr.get(i);
+            log.info("stdList[i] is {}",studentArr.get(i));
             log.info("학생 {}을 {}에 등록합니다",studentName,lectureName);
             qnaMapper.insertStudent(studentName,lectureName,professorName);
             Student addedStudent = qnaMapper.selectStudentByNameLcName(studentName, lectureName,professorName);

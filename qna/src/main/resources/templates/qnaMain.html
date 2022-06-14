@@ -63,7 +63,7 @@
             $(document).on("click","#regiStudents",function(){
                 var existStd = document.getElementsByClassName("rankTblTd1");
                 $(".mainWindow").html("<form action='/qnamain/regiStdLst' id='regiStdFrm' method='post'>" +
-                    "<textarea name='stdList' id='stdListTextArea' placeholder='스페이스로 구분하여 입력(엔터 사용 x)\nex)홍길동 김철수'></textarea>" +
+                    "<textarea name='stdList' id='stdListTextArea' placeholder='엔터로 구분하여 입력'></textarea>" +
                     "<input type='hidden' name='nowLecture' value='[[ ${nowLecture} ]]'> " +
                     "<input type='button' id='existCheck' value='중복확인'/> " +
                     "<input type='button' id='regiStdBtn' value='등록하기'/> " +
@@ -74,6 +74,9 @@
             $(document).on("click","#existCheck",function(){
                 checkStd();
             });
+            $(document).on("propertychange change keyup paste input","#stdListTextArea",function(){
+                $("#doFirst").val("false");
+            })
 
             //학생추가 submit validation
             $(document).on("click","#regiStdBtn",function(){
@@ -82,15 +85,11 @@
                     return
                 }
                 $("#doFirst").val("false");
-                var stdList = $("#stdListTextArea").val().split(' ');//신규입력목록
+                var stdList = $("#stdListTextArea").val().split('\n');//신규입력목록
 
 
                 console.log(stdList);
-                console.log("리스트");
-                if(stdList[0]==' '){
-                    alert("공백으로 시작할 수 없습니다");
-                    return;
-                }
+
                 for(var i=0;i<stdList.length;i++){
                     //var alreadyExist = checkStd(stdList[i]);
                     if(stdList[i] ==''){
@@ -102,6 +101,12 @@
                     }else if($("#existStdCheck").val()=='true'){
                         alert("이미 있는 학생이름입니다["+stdList[i]+"]");
                         $("#existStdCheck").val('false');
+                        return;
+                    }else if(stdNameValid1(stdList[i])){
+                        alert("이름에 공백이 포함될 수 없습니다["+stdList[i]+"]");
+                        return;
+                    }else if(stdNameValid2(stdList[i])){
+                        alert("이름에 특수문자가 포함될 수 없습니다["+stdList[i]+"]");
                         return;
                     }
                     for(var j=0;j<stdList.length;j++){
@@ -115,6 +120,10 @@
                         }
                     }
                 }
+
+                var stdTextAreaVal = $('#stdListTextArea').val().split('\n');
+                $("#regiStdFrm").append("<input type='hidden' name='studentArr' value='"+stdTextAreaVal+"' />");
+                //$("#regiStdFrm").setAttribute("stdToArr",$("#stdListTextArea").val().split('\n'));
                 $("#regiStdFrm").submit();
             })
 
@@ -205,6 +214,7 @@
                     console.log(result);
                     alert(result.name+"당첨!");
                     $(".pickedStd").removeClass("pickedStd");
+
                     $("#stdTd_"+result.name).addClass("pickedStd");
                 },
                 error:function(data,textStatus){
@@ -219,7 +229,12 @@
         }
         //학생중복확인
         function checkStd(){
-            var data = {"studentNames":$("#stdListTextArea").val(),"lectureName":"[[ ${nowLecture} ]]"};
+            var stdTextAreaVal = $('#stdListTextArea').val().split('\n')
+            $("#regiStdFrm").append("<input type='hidden' id='checkExist' name='studentArr' value='"+stdTextAreaVal+"' />");
+            var stdNames = $('#checkExist').val();
+            //var data = {"studentNames":stdNames,"lectureName":"[[ ${nowLecture} ]]"};
+            var data = {"studentNames":stdNames,"lectureName":"[[ ${nowLecture} ]]"};
+            console.log(stdNames);
             $.ajax({
                 type:"post",
                 dataType:"json",
@@ -243,9 +258,28 @@
                     console.log(textStatus);
                 },
                 complete:function(data,textStatus){
+                    $('#checkExist').remove();
                     //console.log(result.name+"의 수정 완료");
                 }
             });
+        }
+        //공백포함여부(false여야함)
+        function stdNameValid1(stdName){
+            if(stdName.search(/\s/) != -1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        //특문포함여부(false여야함)
+        function stdNameValid2(stdName){
+            var special_pattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
+
+            if(special_pattern.test(stdName) == true) {
+                return true;
+            } else {
+                return false;
+            }
         }
         /*]]>*/
     </script>
