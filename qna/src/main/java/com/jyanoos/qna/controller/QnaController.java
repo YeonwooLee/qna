@@ -3,6 +3,7 @@ package com.jyanoos.qna.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jyanoos.qna.domain.*;
+import com.jyanoos.qna.service.MyPage.MyPageService;
 import com.jyanoos.qna.service.qna.QnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import java.util.*;
 public class QnaController {
 
     private final QnaService qnaService;
+    private final MyPageService myPageService;
 
     //qnamain의 주 컨텐츠 화면 구성(기본)
     @RequestMapping("/qnamain")
@@ -61,7 +63,10 @@ public class QnaController {
         }
         HttpSession session = req.getSession();
         String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
-
+        Professor professor = myPageService.getProfessor(professorName);
+        model.addAttribute("pageTitle",professor.getPageTitle());
+        model.addAttribute("pageSubTitle",professor.getPageSubTitle());
+        model.addAttribute("pageFooterMsg",professor.getPageFooterMsg());
 
 
         log.info("현재 교수명 : {}", professorName);
@@ -113,16 +118,16 @@ public class QnaController {
         return "redirect:/qnamain/"+newLectureName;
 
     }
-//    //강의추가
-//    @PostMapping("/qnamain/addLecture")
-//    String addLectureFirst(@RequestParam("newLectureName")String newLectureName,
-//                      HttpServletRequest req){//강의추가
-//        HttpSession session = req.getSession();
-//        String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
-//        qnaService.addLecture(professorName,newLectureName);
-//        return "redirect:/qnamain";
-//
-//    }
+    //강의추가
+    @PostMapping("/qnamain/addLecture")
+    String addLectureFirst(@RequestParam("newLectureName")String newLectureName,
+                      HttpServletRequest req){//강의추가
+        HttpSession session = req.getSession();
+        String professorName = (String) session.getAttribute(QnaConst.LOGIN_MEMBER);
+        qnaService.addLecture(professorName,newLectureName);
+        return "redirect:/qnamain";
+
+    }
     //ajax로 질문 수 변경
     @RequestMapping("/qnaTimesAjax")
     @ResponseBody

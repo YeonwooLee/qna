@@ -3,6 +3,13 @@ if($("#loginTry").val()=="false"){
     //alert("!!")
     $("#login-error-msg").css("opacity",1);
 }
+
+$(document).ready(function(){
+    $('#joinBtnId').click(function(){
+        location.href("join");
+    });
+});
+
 /*
 loginButton.addEventListener("click", (e) => {
     e.preventDefault();

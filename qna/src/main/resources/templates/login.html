@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="../static/login-page.css" th:href="@{/login-page.css}">
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script defer src="../static/login-page.js" th:src="@{/login-page.js}"></script>
+    <script>
+        $(document).ready(function (){
+            $("#joinBtnId").click(function(){
+                location.href="/member/join";
+            });
+        })
+    </script>
 </head>
 
 <body>
@@ -21,6 +28,7 @@
         <input type="hidden" id="loginTry" th:value="${loginTry}"/>
         <input type="submit" value="Login" id="login-form-submit">
     </form>
+    <button type="button" class="joinBtn" id="joinBtnId">회원가입</button>
 </main>
 </body>
 </html>

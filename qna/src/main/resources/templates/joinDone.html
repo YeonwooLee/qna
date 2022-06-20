@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/welcome.css" th:href="@{/css/welcome.css}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script defer src="../static/common.js" th:src="@{/common.js}"></script>
+    <script>
+
+        /*<![CDATA[*/
+        $(document).ready(function(){
+            $("#goLogin").click(function(){
+                location.href = "/loginpage";
+            })
+            hgj("#tempP","[[${infos['humanName']}]]님, 아이디 [[${infos['id']}]]로 가입이 완료되었습니다!");
+        })
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div class="form-wrapper">
+
+        <table>
+            <tr><td><div class="content-wrapper"><span id="tempP">&nbsp;</span></div></td></tr>
+
+            <tr><td><div class="content-wrapper"><button type="button" id="goLogin">로그인페이지로</button> </div></td></tr>
+        </table>
+
+</div>
+</body>
+</html>

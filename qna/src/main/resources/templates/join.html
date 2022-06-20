@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../static/login-page.css" th:href="@{/login-page.css}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script defer src="../static/common.js" th:src="@{/common.js}"></script>
+    <script>
+        $(document).ready(function(){
+            $(".goMainBtn").click(function(){
+                location.href = "/loginpage";
+            })
+            $("#overlapChk").click(function(){
+                checkId();//아이디확인
+
+            });
+
+            //doFirst 내용 변경시
+            $(document).on("propertychange change keyup paste input","#id",function(){
+                $("#doFirst").val("false");
+            })
+
+            $("#goMain").click(function(){
+                location.href="/loginpage";
+            })
+
+        })
+
+        function validPw(){
+            //통과실패
+            var pw = $("#pw").val();
+            var pwChk = $("#pwChk").val()
+            //console.log(pw,pwChk,pw==pwChk);
+            if(pw==pwChk){
+                //alert("일치");
+                return true
+            }
+            return false;//비번불일치
+        }
+
+        //중복확인, ID정합성검사
+        function checkId(){
+            var pfId = $("#id").val();
+            var data = {"pfId":pfId};
+            console.log(pfId);
+            if(stdNameValid1(pfId)){
+                alert("아이디에 공백이 포함될 수 없습니다");
+                return false;
+            }
+            if(stdNameValid2(pfId)){
+                alert("아이디에 특수문자가 포함될 수 없습니다");
+                return false;
+            }
+
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/member/overlapChk",
+                data: data,
+                success:function (result){
+                    var exist = result.exist;
+                    console.log(exist);
+                    console.log(result);
+                    //alert(exist);
+                    if (exist=='true'){
+                        alert("이미 존재하는 아이디입니다.:"+result.pfId);
+                    }
+                    else{
+                        alert("사용할 수 있는 아이디입니다!");
+                        $("#doFirst").val("true");
+                    }
+                },
+                error:function(data,textStatus){
+                    alert("에러가 발생했습니다.");
+                    console.log(data);
+                    console.log(textStatus);
+                },
+                complete:function(data,textStatus){
+
+                }
+            });
+        }
+
+        function validForm(){
+            if($("#doFirst").val()!="true"){
+                alert("먼저 아이디 중복확인을 해주세요");
+                return false;
+            }
+            if(validPw()==false){
+                alert("비밀번호가 일치하지 않습니다");
+                return false;
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<form th:action="@{/member/join}" method="post" name="joinForm" onsubmit="return validForm();">
+    <h1 id="mainH1">[SIGN - UP]</h1>
+    <span class="txtWrapper">ID</span><br/><input type="text" id="id" class="joinTxtBox" name="id"/><button type="button" id="overlapChk">중복확인</button><br/>
+    <span class="txtWrapper">Name</span><br/><input type="text" id="name" class="joinTxtBox" name="humanName"/><br/>
+    <span class="txtWrapper">Pw</span><br/><input type="password" id="pw" class="joinTxtBox" name="pw"/><br/>
+    <span class="txtWrapper">PwChk</span><br/><input type="password" id="pwChk" class="joinTxtBox" name="pwChk"/><br/>
+    <input type="submit" value="가입하기"/> <button type="button" class="goMainBtn">로그인페이지</button>
+    <input type="hidden" id="doFirst"/>
+
+</form>
+</body>
+</html>

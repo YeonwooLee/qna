@@ -134,6 +134,8 @@ public class QnaServiceImpl implements QnaService {
         for(int i=0;i<studentArr.size();i++){
             //String studentName = stdList[i].replace("\n","").replace(" ","").replace("\\a","");
             String studentName = studentArr.get(i);
+            if(studentName.equals("")) continue;
+            log.warn("프론트 처리에서 걸러지지 않은 공백 이름이 들어옵니다.");
             log.info("stdList[i] is {}",studentArr.get(i));
             log.info("학생 {}을 {}에 등록합니다",studentName,lectureName);
             qnaMapper.insertStudent(studentName,lectureName,professorName);

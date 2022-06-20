@@ -13,6 +13,6 @@ public class QnaConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/*.css", "/*.ico","/login","/loginpage","/loginpagefalse","/*.js");
+                .excludePathPatterns("/*.css","/css/*.css","/*.ico","/login","/loginpage","/loginpagefalse","/*.js","/member/join","/member/overlapChk");
     }
 }

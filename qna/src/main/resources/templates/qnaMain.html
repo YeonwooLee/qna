@@ -10,6 +10,13 @@
     <script>
         /*<![CDATA[*/
         $(document).ready(function(){
+            $(".beforeDev").click(function(){
+                alert("설정된 기능이 없는 요소입니다");
+            })
+            $(".lCListTitle").text("Lectures");
+            var today = getToday();
+            $(".today").text(today);
+
             if("[[ ${addLcFail} ]]"=="true"){
                 alert("중복강의명입니다: [[ ${failLcName} ]]");
             }
@@ -63,7 +70,7 @@
             $(document).on("click","#regiStudents",function(){
                 var existStd = document.getElementsByClassName("rankTblTd1");
                 $(".mainWindow").html("<form action='/qnamain/regiStdLst' id='regiStdFrm' method='post'>" +
-                    "<textarea name='stdList' id='stdListTextArea' placeholder='엔터로 구분하여 입력'></textarea>" +
+                    "<textarea name='stdList' id='stdListTextArea' placeholder='아래 예시와 같이 엔터로 구분하여 입력해 주세요 :)\n홍길동 \n김철수'></textarea>" +
                     "<input type='hidden' name='nowLecture' value='[[ ${nowLecture} ]]'> " +
                     "<input type='button' id='existCheck' value='중복확인'/> " +
                     "<input type='button' id='regiStdBtn' value='등록하기'/> " +
@@ -72,8 +79,14 @@
             })
             //중복확인버튼클릭이벤트
             $(document).on("click","#existCheck",function(){
+                var stdValid = checkValidStd();
+                if(stdValid!="stdValidIsOK"){
+                    return;
+                }
                 checkStd();
             });
+
+            //doFirst 내용 변경시
             $(document).on("propertychange change keyup paste input","#stdListTextArea",function(){
                 $("#doFirst").val("false");
             })
@@ -88,40 +101,44 @@
                 var stdList = $("#stdListTextArea").val().split('\n');//신규입력목록
 
 
-                console.log(stdList);
+                console.log(stdList+">>>");
 
-                for(var i=0;i<stdList.length;i++){
-                    //var alreadyExist = checkStd(stdList[i]);
-                    if(stdList[i] ==''){
-                        alert("불필요한 공백이 존재합니다\n스페이스 연속 2회 이상 입력, 공백시작, 공백종료 여부를 확인해주세요");
-                        return;
-                    }else if(stdList[i].includes("\n")){
-                        alert("줄바꿈(Enter키 입력)을 제거해주세요");
-                        return;
-                    }else if($("#existStdCheck").val()=='true'){
-                        alert("이미 있는 학생이름입니다["+stdList[i]+"]");
-                        $("#existStdCheck").val('false');
-                        return;
-                    }else if(stdNameValid1(stdList[i])){
-                        alert("이름에 공백이 포함될 수 없습니다["+stdList[i]+"]");
-                        return;
-                    }else if(stdNameValid2(stdList[i])){
-                        alert("이름에 특수문자가 포함될 수 없습니다["+stdList[i]+"]");
-                        return;
-                    }
-                    for(var j=0;j<stdList.length;j++){
-                        if(i==j){
-                            continue;
-                        }else{
-                            if(stdList[i]==stdList[j]){
-                                alert("중복 이름은 등록할 수 없습니다:["+stdList[i]+"]");
-                                return;
-                            }
-                        }
-                    }
-                }
+                // for(var i=0;i<stdList.length;i++){
+                //     var alreadyExist = checkStd(stdList[i]);
+                //     if(stdList[i] ==''){
+                //         //alert("불필요한 공백이 존재합니다\n스페이스 연속 2회 이상 입력, 공백시작, 공백종료 여부를 확인해주세요");
+                //         //공백 제거
+                //         stdList.splice(i,1);
+                //         i--;
+                //         console.log(stdList+"<<<");
+                //     }else if(stdList[i].includes("\n")){
+                //         alert("줄바꿈(Enter키 입력)을 제거해주세요");
+                //         return;
+                //     }else if($("#existStdCheck").val()=='true'){
+                //         alert("이미 있는 학생이름입니다["+stdList[i]+"]");
+                //         $("#existStdCheck").val('false');
+                //         return;
+                //     }else if(stdNameValid1(stdList[i])){
+                //         alert("이름에 공백이 포함될 수 없습니다["+stdList[i]+"]");
+                //         return;
+                //     }else if(stdNameValid2(stdList[i])){
+                //         alert("이름에 특수문자가 포함될 수 없습니다["+stdList[i]+"]");
+                //         return;
+                //     }
+                //     for(var j=0;j<stdList.length;j++){
+                //         if(i==j){
+                //             continue;
+                //         }else{
+                //             if(stdList[i]==stdList[j]){
+                //                 alert("중복 이름은 등록할 수 없습니다:["+stdList[i]+"]");
+                //                 return;
+                //             }
+                //         }
+                //     }
+                // }
 
-                var stdTextAreaVal = $('#stdListTextArea').val().split('\n');
+                //var stdTextAreaVal = $('#stdListTextArea').val().split('\n');
+                var stdTextAreaVal = stdList;
                 $("#regiStdFrm").append("<input type='hidden' name='studentArr' value='"+stdTextAreaVal+"' />");
                 //$("#regiStdFrm").setAttribute("stdToArr",$("#stdListTextArea").val().split('\n'));
                 $("#regiStdFrm").submit();
@@ -172,9 +189,56 @@
             })
 
             $("#[[ ${nowLecture} ]]"+"_"+"[[ ${session.loginMember}]]").addClass("selectedLc");
+            $("#[[ ${nowLecture} ]]"+"_"+"[[ ${session.loginMember}]]").removeClass("hoverColorTd");
 
 
         })
+        function checkValidStd(){
+            var stdList = $("#stdListTextArea").val().split('\n');//신규입력목록
+
+
+            console.log(stdList+">>>");
+
+            for(var i=0;i<stdList.length;i++){
+                //var alreadyExist = checkStd(stdList[i]);
+                if(stdList[i] ==''){
+                    //alert("불필요한 공백이 존재합니다\n스페이스 연속 2회 이상 입력, 공백시작, 공백종료 여부를 확인해주세요");
+                    //공백 제거
+                    stdList.splice(i,1);
+                    i--;
+                    console.log(stdList+"<<<");
+                }else if(stdList[i].includes("\n")){
+                    alert("줄바꿈(Enter키 입력)을 제거해주세요");
+                    return;
+                }else if($("#existStdCheck").val()=='true'){
+                    alert("이미 있는 학생이름입니다["+stdList[i]+"]");
+                    $("#existStdCheck").val('false');
+                    return;
+                }else if(stdNameValid1(stdList[i])){
+                    alert("이름에 공백이 포함될 수 없습니다["+stdList[i]+"]");
+                    return;
+                }else if(stdNameValid2(stdList[i])){
+                    alert("이름에 특수문자가 포함될 수 없습니다["+stdList[i]+"]\n또는 맨 앞이나 맨 뒤에 공백이 있지 않나 확인해주세요");
+                    return;
+                }
+                for(var j=0;j<stdList.length;j++){
+                    if(i==j){
+                        continue;
+                    }else{
+                        if(stdList[i]==stdList[j]){
+                            alert("중복 이름은 등록할 수 없습니다:["+stdList[i]+"]");
+                            return;
+                        }
+                    }
+                }
+            }
+            return "stdValidIsOK";
+        }
+        function getToday(){
+            var date = new Date();
+            var today = date.getFullYear() + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" + ("0"+date.getDate()).slice(-2);
+            return today;
+        }
         //id=elementId인 요소 체크
         function idExist(elementId){
             var result = document.getElementById(elementId) ? true:false;
@@ -245,7 +309,7 @@
                     console.log(exist);
                     //alert(exist);
                     if (exist=='true'){
-                        alert("중복:"+result.existStdName);
+                        alert("해당 강의에 이미 존재하는 이름입니다:"+result.existStdName);
                     }
                     else{
                         alert("중복없음");
@@ -263,51 +327,51 @@
                 }
             });
         }
-        //공백포함여부(false여야함)
-        function stdNameValid1(stdName){
-            if(stdName.search(/\s/) != -1) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        //특문포함여부(false여야함)
-        function stdNameValid2(stdName){
-            var special_pattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
-
-            if(special_pattern.test(stdName) == true) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        // //공백포함여부(false여야함)
+        // function stdNameValid1(stdName){
+        //     if(stdName.search(/\s/) != -1) {
+        //         return true;
+        //     } else {
+        //         return false;
+        //     }
+        // }
+        // //특문포함여부(false여야함)
+        // function stdNameValid2(stdName){
+        //     var special_pattern = /[(),{}`~!@#$%^&*|\\\'\";:\/?]/gi;
+        //
+        //     if(special_pattern.test(stdName) == true) {
+        //         return true;
+        //     } else {
+        //         return false;
+        //     }
+        // }
         /*]]>*/
     </script>
 </head>
 <body>
 
 <div class="header">
-    <h1>My Website</h1>
-    <p>Resize the browser window to see the effect.</p>
+    <h1 th:text="${pageTitle}">My Website</h1>
+    <p th:text="${pageSubTitle}">■■■■■ ■■■ ■■■■■■■ ■■■■■■ ■■ ■■■ ■■■ ■■■■■■■</p>
 </div>
 
 <div class="topnav">
-    <a href="#">Link</a>
-    <a href="#">Link</a>
-    <a href="#">Link</a>
+    <a th:href="@{|/mypage/main/${session.loginMember}|}">SETTING</a>
+    <a href="#" class="beforeDev">Link</a>
+    <a href="#" class="beforeDev">Link</a>
     <a href="/logout" style="float:right">Logout</a>
 </div>
 
 <div class="row">
     <div class="rightcolumn">
         <div class="card">
-            <h2>TITLE HEADING</h2>
-            <h5>Title description, Dec 7, 2017</h5>
+            <h2 class="lCListTitle">TITLE HEADING</h2>
+            <h5 class="today">Title description, Dec 7, 2017</h5>
 
 
             <table class="lecture">
                 <thead th:each="lecture:${lectureList}" class="lectureThead">
-                    <th th:class="lectureTd" th:id="|${lecture.name}_${session.loginMember}|" th:text="${lecture.name}">수업1</th>
+                    <th th:class="lectureTd" th:classappend="hoverColorTd" th:id="|${lecture.name}_${session.loginMember}|" th:text="${lecture.name}">수업1</th>
                     <th th:id="|del_${lecture.name}_${session.loginMember}|" class="delLc"><div th:class="td-img-wrapper"><img class="del-lc-img" th:src="@{/image/trash.png}"/></div></th>
                 </thead>
                 <thead id="addLecture"><th colspan="2">+</th></thead>
@@ -333,8 +397,10 @@
                         <td class="rankTblTd1" th:each="student:${studentList}" th:id="|stdTd_${student.name}|">
                             <div class="tdLeft">
                                 <span th:if="${student.name!=null}" class="name" th:id="|stdInfo${student.idx}|" th:text="|${student.name}(${student.qnaTimes}회)|">김철수(5회)</span>
-                                <input th:if="${student.name!=null}" th:id="|plusStdBtn_${student.idx}|" th:class="plusStdBtn" type="button"  value="+">
-                                <input th:if="${student.name!=null}" th:id="|minusStdBtn_${student.idx}|" th:class="minusStdBtn" type="button" value="-">
+                                <div class="plmaBtn-wrapper">
+                                    <input th:if="${student.name!=null}" th:id="|plusStdBtn_${student.idx}|" th:class="plusStdBtn" th:classappend="plmaBtn" type="button"  value="+">
+                                    <input th:if="${student.name!=null}" th:id="|minusStdBtn_${student.idx}|" th:class="minusStdBtn" th:classappend="plmaBtn" type="button" value="-">
+                                </div>
                                 <div class="qnaTime">
                                     <span th:id="|qnaTime_${student.idx}|" th:text="${#dates.format(student.lastQnaDate, 'yyyy-MM-dd')}"></span>
                                     <span th:if="${student.name!=null}" class="stdDelBtn " th:id="|stdDelBtn_${student.name}|">삭제</span>
@@ -351,7 +417,7 @@
 </div>
 
 <div class="footer">
-    <h2>Asking costs nothing</h2>
+    <h2 th:text="${pageFooterMsg}">■■■■ ■■■■■■ ■■■■■■■■</h2>
 </div>
 <input type="hidden" id="addLcFail"/>
 </body>

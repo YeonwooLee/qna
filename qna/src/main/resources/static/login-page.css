@@ -67,7 +67,9 @@ body {
     outline: none;
     padding: 0px 0px 5px 5px;
 }
+#loginId-field{
 
+}
 #login-form-submit {
     width: 100%;
     padding: 7px;
@@ -78,4 +80,17 @@ body {
     background-color: #3a3a3a;
     cursor: pointer;
     outline: none;
+}
+
+.joinTxtBox{
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+.txtWrapper{
+    font-weight: bold;
+    color: white;
+}
+#mainH1{
+    /*text-decoration: underline;*/
+    color: white;
 }

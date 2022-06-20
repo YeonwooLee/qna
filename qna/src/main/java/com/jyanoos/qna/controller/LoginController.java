@@ -25,7 +25,12 @@ public class LoginController {
     }
 
     @RequestMapping("/loginpage{loginTry}")
-    public String loginPage(Model model, @PathVariable("loginTry")String loginTry){
+    public String loginPage(Model model, @PathVariable("loginTry")String loginTry,HttpServletRequest req){
+        HttpSession session = req.getSession(); //세션없으면 만듦
+        if(session.getAttribute(QnaConst.LOGIN_MEMBER)!=null){
+            return "redirect:/qnamain";
+        }
+
         log.info("loginTry = {}",loginTry);
         model.addAttribute("loginTry",loginTry);
         return "login";

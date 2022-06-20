@@ -11,4 +11,7 @@ public class Professor {
     int idx;
     String name;
     String password;
+    String pageTitle;
+    String pageSubTitle;
+    String pageFooterMsg;
 }

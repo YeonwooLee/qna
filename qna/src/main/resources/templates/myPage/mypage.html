@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/myPage.css" th:href="@{/css/myPage.css}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script defer src="../static/common.js" th:src="@{/common.js}"></script>
+    <script>
+        $(document).ready(function(){
+            $("#goMain").click(function(){
+                location.href="/qnamain";
+            })
+            $("#saveTitle").click(function(){
+                alert("저장되었습니다.");
+            })
+        });
+        function validPw(){
+            //통과실패
+            var pw = $("#pw").val();
+            var pwChk = $("#pwChk").val()
+            //console.log(pw,pwChk,pw==pwChk);
+            if(pw==pwChk){
+                //alert("일치");
+                return true
+            }
+            return false;//비번불일치
+        }
+        function validForm(){
+            if(validPw()==false){
+                alert("비밀번호가 일치하지 않습니다");
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="content-wrapper">
+        <form th:action="@{|/mypage/update/${professorName}|}" method="post" onsubmit="return validForm();">
+        <table>
+            <div class="innerBtn">
+                <h1>SETTING</h1>
+            </div>
+            <tr>
+                <td>Your Id</td>
+                <td><input type="text" th:value="${professorName}" size="50" readonly/></td>
+            </tr>
+
+            <tr>
+                <td>pageTitle</td>
+                <td>
+                    <input type="text" name="pageTitle" th:value="${pageTitle}" size=50 maxlength=50/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>pageSubTitle</td>
+                <td>
+                    <input type="text" name="pageSubTitle" th:value="${pageSubTitle}" size=50 maxlength=50/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>pageFooterMsg</td>
+                <td>
+                    <input type="text" name="pageFooterMsg" th:value="${pageFooterMsg}" size=50 maxlength=50/>
+                </td>
+            </tr>
+            <tr>
+                <td>새 비밀번호</td>
+                <td>
+                    <input type="password" name="pw" id="pw" size=50 maxlength=50/>
+                </td>
+            </tr>
+            <tr>
+                <td>새 비밀번호 확인</td>
+                <td>
+                    <input type="password" name="pwChk" id="pwChk" size=50 maxlength=50/>
+                </td>
+            </tr>
+        </table>
+            <div class="innerBtn">
+                <input type="submit" class="btn"id="saveTitle" value="저장"/>
+                <button type="button" id="goMain" class="btn">메인으로</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
