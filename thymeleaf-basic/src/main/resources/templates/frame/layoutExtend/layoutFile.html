@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html th:fragment="layoutName (paramTitle,paramContent)" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:replace="${paramTitle}">어짜피 교체될 레이아웃 타이틀</title>
+    </head>
+    <body>
+        <h1> 기본 레이아웃으로써 안사라질 레이아웃의 H1</h1>
+
+        <div th:replace="${paramContent}">
+            <p>어짜피 교체될 레이아웃의 컨텐츠</p>
+        </div>
+
+        <footer>
+            기본 레이아웃으로써 안사라질 푸터
+        </footer>
+    </body>
+</html>
